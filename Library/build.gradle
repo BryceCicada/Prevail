@@ -1,0 +1,46 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'sonar-runner'
+apply plugin: 'pitest'
+
+version = '1.0'
+
+buildscript {
+    dependencies {
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:0.33.0'
+    }
+}
+
+pitest {
+    targetClasses = ['org.bailedout.prevail.*']
+    threads = 4
+    enableDefaultIncrementalAnalysis = true
+    outputFormats = ['XML', 'HTML']
+}
+
+dependencies {
+    compile 'com.google.guava:guava:16.0.1'
+
+    testCompile 'com.google.guava:guava:16.0.1'
+    testCompile 'org.hamcrest:hamcrest-all:1.3'
+    testCompile("junit:junit:4.11"){
+      exclude group: 'org.hamcrest', module: 'hamcrest-core-1.1'
+    }
+    testCompile('org.mockito:mockito-core:1.9.5'){
+        exclude group: 'org.hamcrest', module: 'hamcrest-core-1.1'
+    }
+}
+
+sonarRunner {
+    sonarProperties {
+        property "sonar.host.url", "http://localhost:9000"
+        property "sonar.jdbc.url", "jdbc:h2:tcp://localhost:9092/sonar"
+        property "sonar.jdbc.driverClassName", "org.h2.Driver"
+        property "sonar.jdbc.username", "sonar"
+        property "sonar.jdbc.password", "sonar"
+        property "sonar.branch", "gradle"
+        property "sonar.dynamicAnalysis", "reuseReports"
+        property "sonar.junit.reportsPath", "build/test-results/"
+        property "sonar.pitest.reportsDirectory", "build/reports/pitest/"
+    }
+}
