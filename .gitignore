@@ -3,4 +3,4 @@
 build/
 .gradle
 wrapper
-out
+local.properties

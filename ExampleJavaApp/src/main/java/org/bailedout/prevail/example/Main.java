@@ -5,6 +5,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.bailedout.prevail.chunk.Chunk;
+import org.bailedout.prevail.chunk.HashMapChunk;
 import org.bailedout.prevail.datamodel.DataModel;
 import org.bailedout.prevail.event.*;
 import org.bailedout.prevail.event.dispatcher.EventBusEventDispatcher;
@@ -15,16 +16,17 @@ public class Main {
   public static void main(String args[]) throws InterruptedException, InsertException {
     // Create a message bus to act as our event dispatcher.
     EventBus bus = new EventBus();
-    
+    EventBusEventDispatcher eventDispatcher = new EventBusEventDispatcher(bus);
+
     // Register a subscriber to handle query events whenever they might happen.
-    bus.register(new QueryEventSubscriber());
+    eventDispatcher.register(new QueryEventSubscriber());
 
     // Create a chunk that is backed by a HashMap
     Chunk<HashMapChunk.Key, HashMapChunk.Data> chunk = new HashMapChunk();
 
     // Set the event dispatcher for the chunk to post events
-    chunk.setEventDispatcher(new EventBusEventDispatcher(bus));
-    
+    chunk.setEventDispatcher(eventDispatcher);
+
     // Set an EventFactory on the chunk to create events for query operations
     // Alternatively, the EventFactory could be passed in with the query() method below.
     // The QueryEventFactory produces Events that match those handled by the subscriber
