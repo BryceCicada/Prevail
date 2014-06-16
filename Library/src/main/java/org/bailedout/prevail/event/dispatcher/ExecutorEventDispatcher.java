@@ -22,4 +22,24 @@ public class ExecutorEventDispatcher implements EventDispatcher {
       }
     });
   }
+
+  @Override
+  public void register(final Object subscriber) {
+    mExecutor.execute(new Runnable() {
+      @Override
+      public void run() {
+        mEventDispatcher.register(subscriber);
+      }
+    });
+  }
+
+  @Override
+  public void unregister(final Object subscriber) {
+    mExecutor.execute(new Runnable() {
+      @Override
+      public void run() {
+        mEventDispatcher.unregister(subscriber);
+      }
+    });
+  }
 }

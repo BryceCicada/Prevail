@@ -1,8 +1,6 @@
 package org.bailedout.prevail.event;
 
-import org.bailedout.prevail.type.Key;
-
-public class QueryExceptionEvent<K extends Key> implements QueryEvent, ExceptionEvent {
+public class QueryExceptionEvent<K> implements QueryEvent, ExceptionEvent {
   private final K mKey;
   private final Exception mExeption;
 

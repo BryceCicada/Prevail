@@ -17,4 +17,18 @@ public class CompoundEventDispatcher implements EventDispatcher {
       eventDispatcher.dispatchEvent(event);
     }
   }
+
+  @Override
+  public void register(final Object subscriber) {
+    for (EventDispatcher eventDispatcher : mEventDispatchers) {
+      eventDispatcher.register(subscriber);
+    }
+  }
+
+  @Override
+  public void unregister(final Object subscriber) {
+    for (EventDispatcher eventDispatcher : mEventDispatchers) {
+      eventDispatcher.unregister(subscriber);
+    }
+  }
 }

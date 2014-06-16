@@ -5,9 +5,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import org.bailedout.prevail.chunk.Chunk;
-import org.bailedout.prevail.type.Key;
 import org.bailedout.prevail.chunk.QueryResult;
-import org.bailedout.prevail.type.Value;
 import org.bailedout.prevail.event.factory.DeleteEventFactory;
 import org.bailedout.prevail.event.factory.InsertEventFactory;
 import org.bailedout.prevail.event.factory.QueryEventFactory;
@@ -45,11 +43,11 @@ public class DataModel {
     addChunk(EMPTY_CHUNK_ID, chunk, executor);
   }
 
-  public DataModelFuture delete(final Key key, final DeleteEventFactory... deleteEventFactories) {
+  public DataModelFuture delete(final Object key, final DeleteEventFactory... deleteEventFactories) {
     return delete(EMPTY_CHUNK_ID, key, deleteEventFactories);
   }
 
-  public DataModelFuture delete(final String chunkId, final Key key, final DeleteEventFactory... deleteEventFactories) {
+  public DataModelFuture delete(final String chunkId, final Object key, final DeleteEventFactory... deleteEventFactories) {
     return operationOnChunks(chunkId, new Function<Chunk, Integer>() {
       @Override
       public Integer apply(final Chunk chunk) {
@@ -63,14 +61,14 @@ public class DataModel {
     });
   }
 
-  public DataModelFuture insert(final Value value, final InsertEventFactory... insertEventFactories) {
+  public DataModelFuture insert(final Object value, final InsertEventFactory... insertEventFactories) {
     return insert(EMPTY_CHUNK_ID, value, insertEventFactories);
   }
 
-  public DataModelFuture insert(final String chunkId, final Value value, final InsertEventFactory... insertEventFactories) {
-    return operationOnChunks(chunkId, new Function<Chunk, Key>() {
+  public DataModelFuture insert(final String chunkId, final Object value, final InsertEventFactory... insertEventFactories) {
+    return operationOnChunks(chunkId, new Function<Chunk, Object>() {
       @Override
-      public Key apply(final Chunk chunk) {
+      public Object apply(final Chunk chunk) {
         try {
           return chunk.insert(value, insertEventFactories);
         } catch (InsertException e) {
@@ -81,11 +79,11 @@ public class DataModel {
     });
   }
 
-  public DataModelFuture query(final Key chunkKey, final QueryEventFactory... queryEventFactories) {
+  public DataModelFuture query(final Object chunkKey, final QueryEventFactory... queryEventFactories) {
     return query(EMPTY_CHUNK_ID, chunkKey, queryEventFactories);
   }
 
-  public DataModelFuture query(final String chunkId, final Key chunkKey, final QueryEventFactory... queryEventFactories) {
+  public DataModelFuture query(final String chunkId, final Object chunkKey, final QueryEventFactory... queryEventFactories) {
     return operationOnChunks(chunkId, new Function<Chunk, QueryResult>() {
       @Override
       public QueryResult apply(final Chunk chunk) {
@@ -99,11 +97,11 @@ public class DataModel {
     });
   }
 
-  public DataModelFuture update(final Key key, final Value value, final UpdateEventFactory... updateEventFactories) {
+  public DataModelFuture update(final Object key, final Object value, final UpdateEventFactory... updateEventFactories) {
     return update(EMPTY_CHUNK_ID, key, value, updateEventFactories);
   }
 
-  public DataModelFuture update(final String chunkId, final Key key, final Value value, final UpdateEventFactory... updateEventFactories) {
+  public DataModelFuture update(final String chunkId, final Object key, final Object value, final UpdateEventFactory... updateEventFactories) {
     return operationOnChunks(chunkId, new Function<Chunk, Integer>() {
       @Override
       public Integer apply(final Chunk chunk) {

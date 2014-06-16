@@ -14,5 +14,15 @@ public class EventBusEventDispatcher implements EventDispatcher {
   public void dispatchEvent(final Object event) {
     mEventBus.post(event);
   }
+
+  @Override
+  public void register(final Object subscriber) {
+    mEventBus.register(subscriber);
+  }
+
+  @Override
+  public void unregister(final Object subscriber) {
+    mEventBus.unregister(subscriber);
+  }
 }
 

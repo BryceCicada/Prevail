@@ -15,8 +15,6 @@ import org.bailedout.prevail.exception.DeleteException;
 import org.bailedout.prevail.exception.InsertException;
 import org.bailedout.prevail.exception.QueryException;
 import org.bailedout.prevail.exception.UpdateException;
-import org.bailedout.prevail.type.Key;
-import org.bailedout.prevail.type.Value;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -1,9 +1,6 @@
 package org.bailedout.prevail.event;
 
-import org.bailedout.prevail.type.Key;
-import org.bailedout.prevail.type.Value;
-
-public class UpdateEndEvent<K extends Key, V extends Value> implements UpdateEvent, EndEvent {
+public class UpdateEndEvent<K, V> implements UpdateEvent, EndEvent {
   private final K mKey;
   private final V mValue;
   private final int mNumValuesUpdated;

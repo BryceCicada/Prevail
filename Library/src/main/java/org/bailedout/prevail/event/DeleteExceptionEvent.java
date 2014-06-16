@@ -1,8 +1,6 @@
 package org.bailedout.prevail.event;
 
-import org.bailedout.prevail.type.Key;
-
-public class DeleteExceptionEvent<K extends Key> implements DeleteEvent, ExceptionEvent {
+public class DeleteExceptionEvent<K> implements DeleteEvent, ExceptionEvent {
   private final K mKey;
   private final Exception mExeption;
 
