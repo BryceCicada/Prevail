@@ -2,12 +2,11 @@ package org.bailedout.prevail.android.example.ui;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.ProgressBar;
+import android.widget.*;
 import org.bailedout.prevail.android.example.R;
 import org.bailedout.prevail.android.example.ui.controller.*;
 
@@ -22,10 +21,16 @@ public class TodoListFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View rootView = inflater.inflate(R.layout.fragment_prevail, container, false);
 
-    mCompositeController.addComponent(new TodoListController((ListView) rootView.findViewById(R.id.list)));
-    mCompositeController.addComponent(new RefreshButtonController((Button) rootView.findViewById(R.id.refreshButton)));
-    mCompositeController.addComponent(new UpdateProgressBarController((ProgressBar) rootView.findViewById(R.id.refreshProgressBar)));
-    mCompositeController.addComponent(new AddButtonController((Button) rootView.findViewById(R.id.addButton)));
+    TodoListController list = new TodoListController((ListView) rootView.findViewById(R.id.list));
+    AddButtonController add = new AddButtonController((CompoundButton) rootView.findViewById(R.id.addButton));
+    AddEditTextController edit = new AddEditTextController((EditText) rootView.findViewById(R.id.addEditText));
+
+    add.setOnCheckedChangeListener(edit);
+    edit.setOnEditCompleteListener(add);
+
+    mCompositeController.addComponent(list);
+    mCompositeController.addComponent(add);
+    mCompositeController.addComponent(edit);
 
     return rootView;
   }

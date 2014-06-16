@@ -18,16 +18,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TodoListController extends DataModelSubscriberController implements AdapterView.OnItemClickListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class TodoListController extends DataModelSubscriberController implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
   private final List<TodoItem> mItems = new ArrayList<TodoItem>();
   private ListView mListView;
+  private boolean mInserting = false;
 
   public TodoListController(final ListView listView) {
     super(listView.getContext());
     mListView = listView;
     mListView.setAdapter(new TodoListAdapter(listView.getContext(), R.layout.list_item, mItems, this, this));
-    mListView.setOnItemClickListener(this);
+    mListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 
     setConnectionListener(new DataModelServiceConnectionListenerDecorator(getConnectionListener()) {
       @Override
@@ -53,15 +54,16 @@ public class TodoListController extends DataModelSubscriberController implements
     getDataModelService().delete(item);
   }
 
-  @Override
-  public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-
-  }
-
   @Subscribe
   public void queryEnd(QueryEndEvent event) {
     mItems.clear();
     mItems.addAll(Arrays.asList(Iterables.toArray(event.getData(), TodoItem.class)));
+
+    if (mInserting) {
+      mListView.setSelection(mItems.size()-1);
+      mInserting = false;
+    }
+
     ((ArrayAdapter<TodoItem>) mListView.getAdapter()).notifyDataSetChanged();
   }
 
@@ -72,6 +74,7 @@ public class TodoListController extends DataModelSubscriberController implements
 
   @Subscribe
   public void insertEnd(InsertEndEvent event) {
+    mInserting = true;
     requery();
   }
 

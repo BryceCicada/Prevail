@@ -47,9 +47,6 @@ public class DataModelService extends Service {
 
     // Register the Chunk on the DataModel.
     mDataModel.addChunk("database", chunk);
-
-    // TODO Remove this
-    mDataModel.insert("database", new TodoItem("Do it!"));
   }
 
   public EventDispatcher getEventDispatcher() {

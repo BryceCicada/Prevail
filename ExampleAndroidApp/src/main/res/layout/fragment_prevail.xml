@@ -6,29 +6,28 @@
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin"
                 android:paddingBottom="@dimen/activity_vertical_margin"
-                tools:context="org.bailedout.prevail.android.example.ui.TodoListFragment">
+                tools:context="org.bailedout.prevail.android.example.ui.TodoListFragment"
+                android:gravity="center">
 
     <ListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/list"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" android:layout_above="@+id/refreshButton"/>
-    <Button
+            android:layout_alignParentTop="true"
+            android:layout_above="@+id/addEditText"/>
+    <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/refresh"
-            android:id="@+id/refreshButton" android:layout_alignParentBottom="true" android:layout_alignParentRight="true"
+            android:id="@+id/addButton" android:src="@android:drawable/ic_input_add"
+            android:background="@android:color/transparent"
+            android:button="@drawable/add_checkbox" android:checked="false" android:layout_alignLeft="@+id/list"
+            android:layout_alignBaseline="@+id/addEditText"/>
+    <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:id="@+id/addEditText"
+            android:layout_alignRight="@+id/list" android:visibility="invisible" android:hint="@string/do_what"
+            android:layout_toRightOf="@+id/addButton" android:layout_alignParentBottom="true"
             />
-    <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/refreshProgressBar" android:layout_alignParentBottom="true"
-            android:layout_toLeftOf="@+id/refreshButton" />
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/add"
-            android:id="@+id/addButton" android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"/>
 </RelativeLayout>
