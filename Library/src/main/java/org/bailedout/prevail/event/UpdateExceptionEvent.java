@@ -1,9 +1,6 @@
 package org.bailedout.prevail.event;
 
-import org.bailedout.prevail.type.Key;
-import org.bailedout.prevail.type.Value;
-
-public class UpdateExceptionEvent<K extends Key, V extends Value> implements UpdateEvent, ExceptionEvent {
+public class UpdateExceptionEvent<K, V> implements UpdateEvent, ExceptionEvent {
   private final K mKey;
   private final V mValue;
   private final Exception mException;

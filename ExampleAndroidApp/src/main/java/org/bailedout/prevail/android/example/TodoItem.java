@@ -1,8 +1,6 @@
 package org.bailedout.prevail.android.example;
 
-import org.bailedout.prevail.type.Value;
-
-public class TodoItem implements Value {
+public class TodoItem {
   private Long _id;
   private String mName;
   private boolean mComplete = false;

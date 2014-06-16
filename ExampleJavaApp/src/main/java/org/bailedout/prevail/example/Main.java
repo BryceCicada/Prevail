@@ -12,6 +12,8 @@ import org.bailedout.prevail.event.dispatcher.EventBusEventDispatcher;
 import org.bailedout.prevail.event.factory.QueryEventFactory;
 import org.bailedout.prevail.exception.InsertException;
 
+import static org.bailedout.prevail.chunk.HashMapChunk.KeyFactory.*;
+
 public class Main {
   public static void main(String args[]) throws InterruptedException, InsertException {
     // Create a message bus to act as our event dispatcher.
@@ -22,7 +24,7 @@ public class Main {
     eventDispatcher.register(new QueryEventSubscriber());
 
     // Create a chunk that is backed by a HashMap
-    Chunk<HashMapChunk.Key, HashMapChunk.Data> chunk = new HashMapChunk();
+    Chunk<Integer, String> chunk = new HashMapChunk<Integer, String>(new HashCodeKeyFactory());
 
     // Set the event dispatcher for the chunk to post events
     chunk.setEventDispatcher(eventDispatcher);
@@ -35,14 +37,14 @@ public class Main {
 
     // Create a DataModel to handle the chunk operations asynchronously.
     DataModel dataModel = new DataModel();
-    
+
     // Register the Chunk on the DataModel.
     dataModel.addChunk(chunk);
 
     // Setup the chunk with some initial data by inserting directly to the chunk.
     // Warning... accessing the chunk directly is a blocking operation on the current Thread
     // (which is fine here, since the data is stored in a HashMap)
-    HashMapChunk.Key key = chunk.insert(new HashMapChunk.Data("foo"));
+    Integer key = chunk.insert("foo");
 
     // Query the DataMode asynchronously for some data on a background thread.
     // Let the registered event subscriber pick up the result.
@@ -67,18 +69,18 @@ public class Main {
     }
   }
 
-  /** An event factory to produce events with types matched to the event subscriber */
-  private static class ExampleQueryEventFactory extends QueryEventFactory.EmptyQueryEventFactory<HashMapChunk.Key, HashMapChunk.Data> {
-    /** Create a QueryStartEvent for matching to the queryStart() method on the subscriber */
+  /**
+   * An event factory to produce events with types matched to the event subscriber
+   */
+  private static class ExampleQueryEventFactory extends QueryEventFactory.EmptyQueryEventFactory<Integer, String> {
     @Override
-    public <E extends Event> Optional<E> startEvent(final HashMapChunk.Key key) {
-      return (Optional<E>) Optional.of(new QueryStartEvent(key));
+    public <E extends Event> Optional<E> startEvent(final Integer key) {
+      return (Optional<E>) Optional.of(new QueryStartEvent<Integer>(key));
     }
 
-    /** Create a QueryEndEvent for matching to the queryEnd() method on the subscriber */
     @Override
-    public <E extends Event> Optional<E> endEvent(final HashMapChunk.Key key, final Iterable<HashMapChunk.Data> value) {
-      return (Optional<E>) Optional.of(new QueryEndEvent(key, value));
+    public <E extends Event> Optional<E> endEvent(final Integer key, final Iterable<String> value) {
+      return (Optional<E>) Optional.of(new QueryEndEvent<Integer, String>(key, value));
     }
   }
 }

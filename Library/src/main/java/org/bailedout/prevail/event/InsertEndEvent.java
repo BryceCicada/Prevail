@@ -1,10 +1,7 @@
 package org.bailedout.prevail.event;
 
 
-import org.bailedout.prevail.type.Key;
-import org.bailedout.prevail.type.Value;
-
-public class InsertEndEvent<K extends Key, V extends Value> implements InsertEvent, EndEvent {
+public class InsertEndEvent<K, V> implements InsertEvent, EndEvent {
   private final K mKey;
   private final V mData;
 

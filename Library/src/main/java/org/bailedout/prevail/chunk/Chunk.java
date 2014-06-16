@@ -10,10 +10,8 @@ import org.bailedout.prevail.exception.DeleteException;
 import org.bailedout.prevail.exception.InsertException;
 import org.bailedout.prevail.exception.QueryException;
 import org.bailedout.prevail.exception.UpdateException;
-import org.bailedout.prevail.type.Key;
-import org.bailedout.prevail.type.Value;
 
-public interface Chunk<K extends Key, V extends Value> {
+public interface Chunk<K, V> {
   /**
    * Inserts a Value into this Chunk, returning the Key at which the get can be retrieved later.
    *
@@ -76,7 +74,7 @@ public interface Chunk<K extends Key, V extends Value> {
    */
   void setEventFactory(DeleteEventFactory deleteEventFactory);
 
-  public static class EmptyChunk<K extends Key, V extends Value> implements Chunk<K, V> {
+  public static class EmptyChunk<K, V> implements Chunk<K, V> {
 
     @Override
     public K insert(final V value, final InsertEventFactory<K, V>... customEventFactory) throws InsertException {

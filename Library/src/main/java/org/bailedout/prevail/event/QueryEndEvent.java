@@ -1,10 +1,7 @@
 package org.bailedout.prevail.event;
 
 
-import org.bailedout.prevail.type.Key;
-import org.bailedout.prevail.type.Value;
-
-public class QueryEndEvent<K extends Key, V extends Value> implements QueryEvent, EndEvent {
+public class QueryEndEvent<K, V> implements QueryEvent, EndEvent {
   private final K mKey;
   private final Iterable<V> mData;
 

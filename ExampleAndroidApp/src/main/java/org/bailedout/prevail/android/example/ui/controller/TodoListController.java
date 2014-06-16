@@ -77,6 +77,6 @@ public class TodoListController extends DataModelSubscriberController implements
 
 
   private void requery() {
-    getDataModelService().query("database.todoItems");
+    getDataModelService().query("*");
   }
 }

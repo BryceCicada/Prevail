@@ -11,13 +11,11 @@ import org.bailedout.prevail.exception.DeleteException;
 import org.bailedout.prevail.exception.InsertException;
 import org.bailedout.prevail.exception.QueryException;
 import org.bailedout.prevail.exception.UpdateException;
-import org.bailedout.prevail.type.Key;
-import org.bailedout.prevail.type.Value;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.bailedout.prevail.event.dispatcher.EventDispatcher.EmptyEventDispatcher;
 
-public class DefaultChunk<K extends Key, V extends Value> implements Chunk<K, V> {
+public class DefaultChunk<K, V> implements Chunk<K, V> {
 
   private Inserter<K, V> mInserter;
   private Queryer<K, V> mQueryer;
@@ -154,53 +152,53 @@ public class DefaultChunk<K extends Key, V extends Value> implements Chunk<K, V>
     mDeleteEventFactory = checkNotNull(deleteEventFactory);
   }
 
-  private void sendEndEvent(final InsertEventFactory eventFactory, final Key key, final V value) {
+  private void sendEndEvent(final InsertEventFactory eventFactory, final K key, final V value) {
     final Optional<Event> endEvent = eventFactory.endEvent(key, value);
     if (endEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(endEvent.get());
     }
   }
 
-  private void sendEndEvent(final InsertEventFactory[] eventFactories, final Key key, final V value) {
+  private void sendEndEvent(final InsertEventFactory[] eventFactories, final K key, final V value) {
     for (InsertEventFactory eventFactory : eventFactories) {
       sendEndEvent(eventFactory, key, value);
     }
   }
 
-  private void sendEndEvent(final QueryEventFactory eventFactory, final Key key, final Iterable<V> values) {
+  private void sendEndEvent(final QueryEventFactory eventFactory, final K key, final Iterable<V> values) {
     final Optional<Event> endEvent = eventFactory.endEvent(key, values);
     if (endEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(endEvent.get());
     }
   }
 
-  private void sendEndEvent(final QueryEventFactory[] eventFactories, final Key key, final Iterable<V> value) {
+  private void sendEndEvent(final QueryEventFactory[] eventFactories, final K key, final Iterable<V> value) {
     for (QueryEventFactory eventFactory : eventFactories) {
       sendEndEvent(eventFactory, key, value);
     }
   }
 
-  private void sendEndEvent(final UpdateEventFactory eventFactory, final Key key, final V value, final int numValuesUpdated) {
+  private void sendEndEvent(final UpdateEventFactory eventFactory, final K key, final V value, final int numValuesUpdated) {
     final Optional<Event> endEvent = eventFactory.endEvent(key, value, numValuesUpdated);
     if (endEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(endEvent.get());
     }
   }
 
-  private void sendEndEvent(final UpdateEventFactory[] eventFactories, final Key key, final V value, final int numValuesUpdated) {
+  private void sendEndEvent(final UpdateEventFactory[] eventFactories, final K key, final V value, final int numValuesUpdated) {
     for (UpdateEventFactory eventFactory : eventFactories) {
       sendEndEvent(eventFactory, key, value, numValuesUpdated);
     }
   }
 
-  private void sendEndEvent(final DeleteEventFactory eventFactory, final Key key, final int numValuesDeleted) {
+  private void sendEndEvent(final DeleteEventFactory eventFactory, final K key, final int numValuesDeleted) {
     final Optional<Event> endEvent = eventFactory.endEvent(key, numValuesDeleted);
     if (endEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(endEvent.get());
     }
   }
 
-  private void sendEndEvent(final DeleteEventFactory[] eventFactories, final Key key, final int numValuesDeleted) {
+  private void sendEndEvent(final DeleteEventFactory[] eventFactories, final K key, final int numValuesDeleted) {
     for (DeleteEventFactory eventFactory : eventFactories) {
       sendEndEvent(eventFactory, key, numValuesDeleted);
     }
@@ -219,40 +217,40 @@ public class DefaultChunk<K extends Key, V extends Value> implements Chunk<K, V>
     }
   }
 
-  private void sendExceptionEvent(final QueryEventFactory eventFactory, final Key key, final QueryException exception) {
+  private void sendExceptionEvent(final QueryEventFactory eventFactory, final K key, final QueryException exception) {
     final Optional<Event> exceptionEvent = eventFactory.exceptionEvent(key, exception);
     if (exceptionEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(exceptionEvent.get());
     }
   }
 
-  private void sendExceptionEvent(final QueryEventFactory[] eventFactories, final Key key, final QueryException exception) {
+  private void sendExceptionEvent(final QueryEventFactory[] eventFactories, final K key, final QueryException exception) {
     for (QueryEventFactory eventFactory : eventFactories) {
       sendExceptionEvent(eventFactory, key, exception);
     }
   }
 
-  private void sendExceptionEvent(final UpdateEventFactory eventFactory, final Key key, final V value, final UpdateException exception) {
+  private void sendExceptionEvent(final UpdateEventFactory eventFactory, final K key, final V value, final UpdateException exception) {
     final Optional<Event> exceptionEvent = eventFactory.exceptionEvent(key, value, exception);
     if (exceptionEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(exceptionEvent.get());
     }
   }
 
-  private void sendExceptionEvent(final UpdateEventFactory[] eventFactories, final Key key, final V value, final UpdateException exception) {
+  private void sendExceptionEvent(final UpdateEventFactory[] eventFactories, final K key, final V value, final UpdateException exception) {
     for (UpdateEventFactory eventFactory : eventFactories) {
       sendExceptionEvent(eventFactory, key, value, exception);
     }
   }
 
-  private void sendExceptionEvent(final DeleteEventFactory eventFactory, final Key key, final DeleteException exception) {
+  private void sendExceptionEvent(final DeleteEventFactory eventFactory, final K key, final DeleteException exception) {
     final Optional<Event> exceptionEvent = eventFactory.exceptionEvent(key, exception);
     if (exceptionEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(exceptionEvent.get());
     }
   }
 
-  private void sendExceptionEvent(final DeleteEventFactory[] eventFactories, final Key key, final DeleteException exception) {
+  private void sendExceptionEvent(final DeleteEventFactory[] eventFactories, final K key, final DeleteException exception) {
     for (DeleteEventFactory eventFactory : eventFactories) {
       sendExceptionEvent(eventFactory, key, exception);
     }
@@ -271,40 +269,40 @@ public class DefaultChunk<K extends Key, V extends Value> implements Chunk<K, V>
     }
   }
 
-  private void sendStartEvent(final QueryEventFactory eventFactory, final Key key) {
+  private void sendStartEvent(final QueryEventFactory eventFactory, final K key) {
     final Optional<Event> startEvent = eventFactory.startEvent(key);
     if (startEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(startEvent.get());
     }
   }
 
-  private void sendStartEvent(final QueryEventFactory[] eventFactories, final Key key) {
+  private void sendStartEvent(final QueryEventFactory[] eventFactories, final K key) {
     for (QueryEventFactory eventFactory : eventFactories) {
       sendStartEvent(eventFactory, key);
     }
   }
 
-  private void sendStartEvent(final UpdateEventFactory eventFactory, final Key key, final V value) {
+  private void sendStartEvent(final UpdateEventFactory eventFactory, final K key, final V value) {
     final Optional<Event> startEvent = eventFactory.startEvent(key, value);
     if (startEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(startEvent.get());
     }
   }
 
-  private void sendStartEvent(final UpdateEventFactory[] eventFactories, final Key key, final V value) {
+  private void sendStartEvent(final UpdateEventFactory[] eventFactories, final K key, final V value) {
     for (UpdateEventFactory eventFactory : eventFactories) {
       sendStartEvent(eventFactory, key, value);
     }
   }
 
-  private void sendStartEvent(final DeleteEventFactory eventFactory, final Key key) {
+  private void sendStartEvent(final DeleteEventFactory eventFactory, final K key) {
     final Optional<Event> startEvent = eventFactory.startEvent(key);
     if (startEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(startEvent.get());
     }
   }
 
-  private void sendStartEvent(final DeleteEventFactory[] eventFactories, final Key key) {
+  private void sendStartEvent(final DeleteEventFactory[] eventFactories, final K key) {
     for (DeleteEventFactory eventFactory : eventFactories) {
       sendStartEvent(eventFactory, key);
     }

@@ -15,7 +15,6 @@ import org.bailedout.prevail.datamodel.DataModel;
 import org.bailedout.prevail.event.dispatcher.EventBusEventDispatcher;
 import org.bailedout.prevail.event.dispatcher.EventDispatcher;
 import org.bailedout.prevail.event.dispatcher.ExecutorEventDispatcher;
-import org.bailedout.prevail.type.Simple;
 
 public class DataModelService extends Service {
   final EventDispatcher mEventDispatcher;
@@ -33,7 +32,7 @@ public class DataModelService extends Service {
   public void onCreate() {
     super.onCreate();
 
-    final Chunk<Simple<Integer>, TodoItem> chunk = new DatabaseChunk(getApplicationContext());
+    final Chunk<Long, TodoItem> chunk = new DatabaseChunk(getApplicationContext());
 
     // Set the event dispatcher for the chunk to post events
     chunk.setEventDispatcher(mEventDispatcher);
@@ -57,36 +56,25 @@ public class DataModelService extends Service {
     return mEventDispatcher;
   }
 
-  public void insert(final TodoItem ti) {
-    mDataModel.insert("database", ti);
-  }
-
-  public void delete(final TodoItem item) {
-    mDataModel.delete("database", new Simple(item.getId()));
-  }
-
   @Override
   public IBinder onBind(final Intent intent) {
     return new DataModelServiceBinder();
   }
 
-  /**
-   * Query the datamodel with a String query
-   *
-   * In this example, the query String is contains elements from a simple DSL.  Queries are
-   * of the form [chunkId].[chunkKey].
-   *
-   * Generally, this query string could parse to a more complex object.  In fact, there's no
-   * need to parse that object from a String, if the client code understands how to construct
-   * such a query object itself.
-   */
-  public void query(final String keyString) {
-    final String[] split = keyString.split("\\.");
-    mDataModel.query(split[0], new Simple<String>(split[1]));
+  public void query(final String queryString) {
+    mDataModel.query("database", queryString);
+  }
+
+  public void insert(final TodoItem ti) {
+    mDataModel.insert("database", ti);
+  }
+
+  public void delete(final TodoItem item) {
+    mDataModel.delete("database", item.getId());
   }
 
   public void update(final TodoItem item) {
-    mDataModel.update("database", new Simple(item.getId()), item);
+    mDataModel.update("database", item.getId(), item);
   }
 
   public class DataModelServiceBinder extends Binder {

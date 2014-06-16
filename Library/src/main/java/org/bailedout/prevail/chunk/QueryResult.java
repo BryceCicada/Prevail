@@ -1,16 +1,15 @@
 package org.bailedout.prevail.chunk;
 
 import com.google.common.collect.Iterators;
-import org.bailedout.prevail.type.Value;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public interface QueryResult<V extends Value> extends Iterable<V>, Closeable {
+public interface QueryResult<V> extends Iterable<V>, Closeable {
 
-  public static class EmptyQueryResult<V extends Value> implements QueryResult<V> {
+  public static class EmptyQueryResult<V> implements QueryResult<V> {
     @Override
     public void close() throws IOException {
       // Do nothing.
@@ -22,7 +21,7 @@ public interface QueryResult<V extends Value> extends Iterable<V>, Closeable {
     }
   }
 
-  public static class SingletonQueryResult<T extends Value> implements QueryResult<T> {
+  public static class SingletonQueryResult<T> implements QueryResult<T> {
     private T mT;
 
     public SingletonQueryResult(final T t) {
