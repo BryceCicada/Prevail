@@ -35,7 +35,7 @@ public interface QueryResult<V> extends Iterable<V>, Closeable {
 
     @Override
     public Iterator<T> iterator() {
-      return Arrays.asList(mT).iterator();
+      return Iterators.singletonIterator(mT);
     }
   }
 

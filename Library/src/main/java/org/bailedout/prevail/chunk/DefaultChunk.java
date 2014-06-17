@@ -15,12 +15,7 @@ import org.bailedout.prevail.exception.UpdateException;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.bailedout.prevail.event.dispatcher.EventDispatcher.EmptyEventDispatcher;
 
-public class DefaultChunk<K, V> implements Chunk<K, V> {
-
-  private Inserter<K, V> mInserter;
-  private Queryer<K, V> mQueryer;
-  private Updater<K, V> mUpdater;
-  private Deleter<K> mDeleter;
+public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
 
   private InsertEventFactory mInsertEventFactory = new InsertEventFactory.EmptyInsertEventFactory();
   private QueryEventFactory mQueryEventFactory = new QueryEventFactory.EmptyQueryEventFactory();
@@ -32,17 +27,6 @@ public class DefaultChunk<K, V> implements Chunk<K, V> {
   public DefaultChunk() {
   }
 
-  public DefaultChunk(final Inserter inserter, final Queryer queryer, final Updater updater, final Deleter deleter) {
-    init(inserter, queryer, updater, deleter);
-  }
-
-  protected void init(final Inserter inserter, final Queryer queryer, final Updater updater, final Deleter deleter) {
-    mInserter = Optional.fromNullable(inserter).or(new Inserter.EmptyInserter());
-    mQueryer = Optional.fromNullable(queryer).or(new Queryer.EmptyQueryer());
-    mUpdater = Optional.fromNullable(updater).or(new Updater.EmptyUpdater());
-    mDeleter = Optional.fromNullable(deleter).or(new Deleter.EmptyDeleter());
-  }
-
   @Override
   public K insert(final V value, final InsertEventFactory<K, V>... customEventFactories) throws InsertException {
     InsertEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new InsertEventFactory[0]);
@@ -51,7 +35,7 @@ public class DefaultChunk<K, V> implements Chunk<K, V> {
       sendStartEvent(mInsertEventFactory, value);
       sendStartEvent(factories, value);
 
-      final K key = mInserter.insert(value);
+      final K key = doInsert(value);
 
       sendEndEvent(factories, key, value);
       sendEndEvent(mInsertEventFactory, key, value);
@@ -64,6 +48,22 @@ public class DefaultChunk<K, V> implements Chunk<K, V> {
     }
   }
 
+  /**
+   * Insert a value to the Chunk.
+   * <p>
+   * This method should be overriden by subclasses in order to store the value in an implementation
+   * specific manner. There is no requirement to send any events from this method.
+   * <p>
+   * The semantics of this method is implementation specific.  That is, some implementations may choose
+   * to throw an InsertException if the given key already exists in the Chunk, whilst other implementations
+   * may wish to replace the value in that case.
+   *
+   * @param value  The value to be stored
+   * @return a Key into the chunk for later retrieval of the given value.
+   * @throws InsertException
+   */
+  protected abstract K doInsert(final V value) throws InsertException;
+
   @Override
   public QueryResult<V> query(final K key, final QueryEventFactory<K, V>... customEventFactories) throws QueryException {
     QueryEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new QueryEventFactory[0]);
@@ -72,7 +72,7 @@ public class DefaultChunk<K, V> implements Chunk<K, V> {
       sendStartEvent(mQueryEventFactory, key);
       sendStartEvent(factories, key);
 
-      final QueryResult values = mQueryer.query(key);
+      final QueryResult values = doQuery(key);
 
       sendEndEvent(factories, key, values);
       sendEndEvent(mQueryEventFactory, key, values);
@@ -85,6 +85,18 @@ public class DefaultChunk<K, V> implements Chunk<K, V> {
     }
   }
 
+  /**
+   * Query values from the Chunk.
+   * <p>
+   * This method should be overriden by subclasses in order to obtain the values in an implementation
+   * specific manner. There is no requirement to send any events from this method.
+   *
+   * @param key The key to obtain the required values
+   * @return a QueryResult containing the returned values.
+   * @throws QueryException
+   */
+  protected abstract QueryResult doQuery(final K key) throws QueryException;
+
   @Override
   public int update(final K key, final V value, final UpdateEventFactory<K, V>... customEventFactories) throws UpdateException {
     UpdateEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new UpdateEventFactory[0]);
@@ -93,7 +105,7 @@ public class DefaultChunk<K, V> implements Chunk<K, V> {
       sendStartEvent(mUpdateEventFactory, key, value);
       sendStartEvent(factories, key, value);
 
-      final int i = mUpdater.update(key, value);
+      final int i = doUpdate(key, value);
 
       sendEndEvent(factories, key, value, i);
       sendEndEvent(mUpdateEventFactory, key, value, i);
@@ -106,6 +118,23 @@ public class DefaultChunk<K, V> implements Chunk<K, V> {
     }
   }
 
+  /**
+   * Update the value at the given key in the Chunk.
+   * <p>
+   * This method should be overriden by subclasses in order to update the value in an implementation
+   * specific manner. There is no requirement to send any events from this method.
+   * <p>
+   * The semantics of this method is implementation specific.  That is, some implementations may choose
+   * to throw an UpdateException if the given key does not exist in the Chunk, whilst other implementations
+   * may wish to insert the value in that case.
+   *
+   * @param key The key of the value to be updated.
+   * @param value  The value to be stored.
+   * @return the number of values updated.
+   * @throws UpdateException
+   */
+  protected abstract int doUpdate(final K key, final V value) throws UpdateException;
+
   @Override
   public int delete(final K key, final DeleteEventFactory<K>... customEventFactories) throws DeleteException {
     DeleteEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new DeleteEventFactory[0]);
@@ -114,7 +143,7 @@ public class DefaultChunk<K, V> implements Chunk<K, V> {
       sendStartEvent(mDeleteEventFactory, key);
       sendStartEvent(customEventFactories, key);
 
-      final int i = mDeleter.delete(key);
+      final int i = doDelete(key);
 
       sendEndEvent(customEventFactories, key, i);
       sendEndEvent(mDeleteEventFactory, key, i);
@@ -126,6 +155,22 @@ public class DefaultChunk<K, V> implements Chunk<K, V> {
       throw e;
     }
   }
+
+  /**
+   * Update the value at the given key in the Chunk.
+   * <p>
+   * This method should be overriden by subclasses in order to update the value in an implementation
+   * specific manner. There is no requirement to send any events from this method.
+   * <p>
+   * The semantics of this method is implementation specific.  That is, some implementations may choose
+   * to throw an DeleteException if the given key does not exist in the Chunk, whilst other implementations
+   * may wish to do nothing.
+   *
+   * @param key The key of the value to be deleted.
+   * @return the number of values deleted.
+   * @throws DeleteException
+   */
+  protected abstract int doDelete(final K key) throws DeleteException;
 
   @Override
   public void setEventDispatcher(final EventDispatcher eventDispatcher) {

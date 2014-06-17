@@ -1,7 +1,6 @@
 package org.bailedout.prevail.chunk;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Iterators;
 import com.google.common.eventbus.EventBus;
 import org.bailedout.prevail.event.*;
 import org.bailedout.prevail.event.dispatcher.EventBusEventDispatcher;
@@ -18,8 +17,7 @@ import org.bailedout.prevail.exception.UpdateException;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Iterator;
+import javax.management.Query;
 import java.util.concurrent.Executor;
 
 import static org.hamcrest.core.Is.is;
@@ -33,20 +31,12 @@ public class DefaultChunkTest {
   private Updater<Key, Value> mUpdater = mock(Updater.class);
   private Deleter<Key> mDeleter = mock(Deleter.class);
 
-  private Chunk<Key, Value> mChunk = new DefaultChunk<Key, Value>(mInserter, mQueryer, mUpdater, mDeleter);
+  private Chunk<Key, Value> mChunk = new KeyValueChunk(mInserter, mUpdater, mQueryer, mDeleter);
 
   private Key mKey = mock(Key.class);
   private Value mValue = mock(Value.class);
-  private QueryResult<Value> mQueryResult = new QueryResult<Value>() {
-    @Override
-    public void close() throws IOException {
-    }
 
-    @Override
-    public Iterator<Value> iterator() {
-      return Iterators.singletonIterator(mValue);
-    }
-  };
+  private QueryResult<Value> mQueryResult = new QueryResult.SingletonQueryResult<Value>(mValue);
 
   private Event mEvent = new Event(){};
 
@@ -409,30 +399,6 @@ public class DefaultChunkTest {
   }
 
   @Test
-  public void testNullDeleterInConstructorDoesNotCauseNPEOnDelete() throws DeleteException {
-    final Chunk<Key, Value> chunk = new DefaultChunk<Key, Value>(null, null, null, null);
-    chunk.delete(mKey);
-  }
-
-  @Test
-  public void testNullInserterInConstructorDoesNotCauseNPEOnInsertion() throws InsertException {
-    final Chunk<Key, Value> chunk = new DefaultChunk<Key, Value>(null, null, null, null);
-    chunk.insert(mValue);
-  }
-
-  @Test
-  public void testNullQueryerInConstructorDoesNotCauseNPEOnQuery() throws QueryException {
-    final Chunk<Key, Value> chunk = new DefaultChunk<Key, Value>(null, null, null, null);
-    chunk.query(mKey);
-  }
-
-  @Test
-  public void testNullUpdaterInConstructorDoesNotCauseNPEOnUpdate() throws UpdateException {
-    final Chunk<Key, Value> chunk = new DefaultChunk<Key, Value>(null, null, null, null);
-    chunk.update(mKey, mValue);
-  }
-
-  @Test
   public void testQueryCallsExecuteOnEventBusRegisteredWithExecutor() throws QueryException {
     final QueryEventFactory<Key, Value> eventFactory = mockQueryEventFactory(Optional.of(mEvent), Optional.of(mEvent), Optional.<Event>absent());
     final Executor executor = mock(Executor.class);
@@ -722,4 +688,56 @@ public class DefaultChunkTest {
     verify(chunkEventFactory, times(1)).exceptionEvent(argThat(is(mKey)), argThat(is(mValue)), argThat(is(updateException)));
   }
 
+  private interface Key {}
+  private interface Value {}
+
+  private interface Inserter<K, V> {
+    K insert(V value) throws InsertException;
+  }
+
+  private interface Queryer<K, V> {
+    QueryResult query(K key) throws QueryException;
+  }
+
+  private interface Updater<K, V> {
+    int update(K key, V value) throws UpdateException;
+  }
+
+  private interface Deleter<K> {
+    int delete(K key) throws DeleteException;
+  }
+
+  private static class KeyValueChunk extends DefaultChunk<Key, Value> {
+    private Inserter<Key, Value> mInserter;
+    private Updater<Key, Value> mUpdater;
+    private Queryer<Key, Value> mQueryer;
+    private Deleter<Key> mDeleter;
+
+    public KeyValueChunk(final Inserter<Key, Value> inserter, final Updater<Key, Value> updater, final Queryer<Key, Value> queryer, final Deleter<Key> deleter) {
+      mInserter = inserter;
+      mUpdater = updater;
+      mQueryer = queryer;
+      mDeleter = deleter;
+    }
+
+    @Override
+    protected Key doInsert(final Value value) throws InsertException {
+      return mInserter.insert(value);
+    }
+
+    @Override
+    protected QueryResult doQuery(final Key key) throws QueryException {
+      return mQueryer.query(key);
+    }
+
+    @Override
+    protected int doUpdate(final Key key, final Value value) throws UpdateException {
+      return mUpdater.update(key, value);
+    }
+
+    @Override
+    protected int doDelete(final Key key) throws DeleteException {
+      return mDeleter.delete(key);
+    }
+  }
 }

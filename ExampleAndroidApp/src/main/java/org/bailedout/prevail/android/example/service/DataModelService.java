@@ -32,7 +32,11 @@ public class DataModelService extends Service {
   public void onCreate() {
     super.onCreate();
 
-    final Chunk<Long, TodoItem> chunk = new DatabaseChunk(getApplicationContext());
+    // Create a chunk to contain the TodoItems, accessed via a String.
+    // For this Chunk, the String key forms a simple DSL:
+    //   1. "<long id>" to address a particular TodoItem, and
+    //   2. "*" to address all TodoItems.
+    final Chunk<String, TodoItem> chunk = new DatabaseChunk(getApplicationContext());
 
     // Set the event dispatcher for the chunk to post events
     chunk.setEventDispatcher(mEventDispatcher);
@@ -41,9 +45,9 @@ public class DataModelService extends Service {
     // Alternatively, the EventFactory could be passed in with the query() method below.
     // The QueryEventFactory produces Events that match those handled by the subscriber
     // registered on the EventBus, above.
-    chunk.setEventFactory(new DatabaseQueryEventFactory());
-    chunk.setEventFactory(new DatabaseDeleteEventFactory());
-    chunk.setEventFactory(new DatabaseInsertEventFactory());
+    chunk.setEventFactory(new DatabaseQueryEventFactory<String, TodoItem>());
+    chunk.setEventFactory(new DatabaseDeleteEventFactory<String>());
+    chunk.setEventFactory(new DatabaseInsertEventFactory<String, TodoItem>());
 
     // Register the Chunk on the DataModel.
     mDataModel.addChunk("database", chunk);
@@ -62,16 +66,16 @@ public class DataModelService extends Service {
     mDataModel.query("database", queryString);
   }
 
-  public void insert(final TodoItem ti) {
-    mDataModel.insert("database", ti);
+  public void insert(final TodoItem item) {
+    mDataModel.insert("database", item);
   }
 
   public void delete(final TodoItem item) {
-    mDataModel.delete("database", item.getId());
+    mDataModel.delete("database", Long.toString(item.getId()));
   }
 
   public void update(final TodoItem item) {
-    mDataModel.update("database", item.getId(), item);
+    mDataModel.update("database", Long.toString(item.getId()), item);
   }
 
   public class DataModelServiceBinder extends Binder {

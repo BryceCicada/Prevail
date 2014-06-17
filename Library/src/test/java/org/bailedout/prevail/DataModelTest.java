@@ -28,7 +28,7 @@ public class DataModelTest {
 
   private final DataModel mDataModel = new DataModel();
 
-  private Chunk mChunk = mock(Chunk.class);
+  private Chunk<Key, Value> mChunk = mock(Chunk.class);
 
   private Key mKey = mock(Key.class);
   private Value mValue = mock(Value.class);
@@ -82,7 +82,7 @@ public class DataModelTest {
   @Test
   public void testDeleteIsExecutedOnBackgroundThread() throws InterruptedException, TimeoutException {
     final Thread testThread = Thread.currentThread();
-    Chunk chunk = new Chunk.EmptyChunk() {
+    Chunk<Key, Value> chunk = new Chunk.EmptyChunk<Key, Value>() {
       @Override
       public int delete(Key key, DeleteEventFactory... eventFactories) throws DeleteException {
         assertThat(Thread.currentThread(), is(not(testThread)));
@@ -98,7 +98,7 @@ public class DataModelTest {
     final Thread[] chunkThreadFromFactory = new Thread[1];
     Executor executor = getExecutorAndThread(chunkThreadFromFactory);
 
-    final Chunk chunk = new Chunk.EmptyChunk() {
+    final Chunk<Key, Value> chunk = new Chunk.EmptyChunk<Key, Value>() {
       @Override
       public int delete(Key key, DeleteEventFactory... eventFactories) throws DeleteException {
         assertThat(Thread.currentThread(), is(chunkThreadFromFactory[0]));
@@ -154,7 +154,7 @@ public class DataModelTest {
   @Test
   public void testInsertIsExecutedOnBackgroundThread() throws InterruptedException, TimeoutException {
     final Thread testThread = Thread.currentThread();
-    Chunk chunk = new Chunk.EmptyChunk() {
+    Chunk<Key, Value> chunk = new Chunk.EmptyChunk<Key, Value>() {
       @Override
       public Key insert(Value value, InsertEventFactory... eventFactories) throws InsertException {
         assertThat(Thread.currentThread(), is(not(testThread)));
@@ -170,7 +170,7 @@ public class DataModelTest {
     final Thread[] chunkThreadFromFactory = new Thread[1];
     Executor executor = getExecutorAndThread(chunkThreadFromFactory);
 
-    final Chunk chunk = new Chunk.EmptyChunk() {
+    final Chunk<Key, Value> chunk = new Chunk.EmptyChunk<Key, Value>() {
       @Override
       public Key insert(Value value, InsertEventFactory... eventFactories) throws InsertException {
         assertThat(Thread.currentThread(), is(chunkThreadFromFactory[0]));
@@ -242,7 +242,7 @@ public class DataModelTest {
   @Test
   public void testQueryIsExecutedOnBackgroundThread() throws InterruptedException, TimeoutException {
     final Thread testThread = Thread.currentThread();
-    Chunk chunk = new Chunk.EmptyChunk() {
+    Chunk<Key, Value> chunk = new Chunk.EmptyChunk<Key, Value>() {
       @Override
       public QueryResult query(Key key, QueryEventFactory... eventFactories) throws QueryException {
         assertThat(Thread.currentThread(), is(not(testThread)));
@@ -258,7 +258,7 @@ public class DataModelTest {
     final Thread[] chunkThreadFromFactory = new Thread[1];
     Executor executor = getExecutorAndThread(chunkThreadFromFactory);
 
-    final Chunk chunk = new Chunk.EmptyChunk() {
+    final Chunk<Key, Value> chunk = new Chunk.EmptyChunk<Key, Value>() {
       @Override
       public QueryResult query(Key key, QueryEventFactory... eventFactories) throws QueryException {
         assertThat(Thread.currentThread(), is(chunkThreadFromFactory[0]));
@@ -314,7 +314,7 @@ public class DataModelTest {
   @Test
   public void testUpdateIsExecutedOnBackgroundThread() throws InterruptedException, TimeoutException {
     final Thread testThread = Thread.currentThread();
-    Chunk chunk = new Chunk.EmptyChunk() {
+    Chunk<Key, Value> chunk = new Chunk.EmptyChunk<Key, Value>() {
       @Override
       public int update(Key key, Value value, UpdateEventFactory... eventFactories) throws UpdateException {
         assertThat(Thread.currentThread(), is(not(testThread)));
@@ -330,7 +330,7 @@ public class DataModelTest {
     final Thread[] chunkThreadFromFactory = new Thread[1];
     Executor executor = getExecutorAndThread(chunkThreadFromFactory);
 
-    final Chunk chunk = new Chunk.EmptyChunk() {
+    final Chunk<Key, Value> chunk = new Chunk.EmptyChunk<Key, Value>() {
       @Override
       public int update(Key key, Value value, UpdateEventFactory... eventFactories) throws UpdateException {
         assertThat(Thread.currentThread(), is(chunkThreadFromFactory[0]));
@@ -352,5 +352,8 @@ public class DataModelTest {
       }
     });
   }
+
+  private interface Key{}
+  private interface Value{}
 
 }
