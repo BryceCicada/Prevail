@@ -1,6 +1,6 @@
 package org.bailedout.prevail.event;
 
-public class UpdateExceptionEvent<K, V> implements UpdateEvent, ExceptionEvent {
+public class UpdateExceptionEvent<K, V> implements UpdateEvent, DataChangeExceptionEvent {
   private final K mKey;
   private final V mValue;
   private final Exception mException;

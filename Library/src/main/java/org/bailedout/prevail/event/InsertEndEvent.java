@@ -1,7 +1,7 @@
 package org.bailedout.prevail.event;
 
 
-public class InsertEndEvent<K, V> implements InsertEvent, EndEvent {
+public class InsertEndEvent<K, V> implements InsertEvent, DataChangeEndEvent {
   private final K mKey;
   private final V mData;
 
