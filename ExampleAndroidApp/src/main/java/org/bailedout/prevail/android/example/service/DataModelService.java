@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 import com.google.common.eventbus.EventBus;
 import org.bailedout.prevail.android.example.TodoItem;
 import org.bailedout.prevail.android.example.event.database.DatabaseDeleteEventFactory;
@@ -15,8 +16,15 @@ import org.bailedout.prevail.datamodel.DataModel;
 import org.bailedout.prevail.event.dispatcher.EventBusEventDispatcher;
 import org.bailedout.prevail.event.dispatcher.EventDispatcher;
 import org.bailedout.prevail.event.dispatcher.ExecutorEventDispatcher;
+import org.bailedout.prevail.exception.DeleteException;
+import org.bailedout.prevail.exception.InsertException;
+import org.bailedout.prevail.exception.QueryException;
+import org.bailedout.prevail.exception.UpdateException;
 
 public class DataModelService extends Service {
+
+  private static final String TAG = DataModelService.class.getSimpleName();
+
   final EventDispatcher mEventDispatcher;
   final DataModel mDataModel;
 

@@ -2,6 +2,9 @@ package org.bailedout.prevail.chunk;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
+import org.bailedout.prevail.Key;
+import org.bailedout.prevail.KeyValueChunk;
+import org.bailedout.prevail.Value;
 import org.bailedout.prevail.event.*;
 import org.bailedout.prevail.event.dispatcher.EventBusEventDispatcher;
 import org.bailedout.prevail.event.dispatcher.EventDispatcher;
@@ -17,7 +20,6 @@ import org.bailedout.prevail.exception.UpdateException;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.management.Query;
 import java.util.concurrent.Executor;
 
 import static org.hamcrest.core.Is.is;
@@ -26,10 +28,10 @@ import static org.mockito.Mockito.*;
 
 public class DefaultChunkTest {
 
-  private Inserter<Key, Value> mInserter = mock(Inserter.class);
-  private Queryer<Key, Value> mQueryer = mock(Queryer.class);
-  private Updater<Key, Value> mUpdater = mock(Updater.class);
-  private Deleter<Key> mDeleter = mock(Deleter.class);
+  private KeyValueChunk.Inserter<Key, Value> mInserter = mock(KeyValueChunk.Inserter.class);
+  private KeyValueChunk.Queryer<Key, Value> mQueryer = mock(KeyValueChunk.Queryer.class);
+  private KeyValueChunk.Updater<Key, Value> mUpdater = mock(KeyValueChunk.Updater.class);
+  private KeyValueChunk.Deleter<Key> mDeleter = mock(KeyValueChunk.Deleter.class);
 
   private Chunk<Key, Value> mChunk = new KeyValueChunk(mInserter, mUpdater, mQueryer, mDeleter);
 
@@ -688,56 +690,4 @@ public class DefaultChunkTest {
     verify(chunkEventFactory, times(1)).exceptionEvent(argThat(is(mKey)), argThat(is(mValue)), argThat(is(updateException)));
   }
 
-  private interface Key {}
-  private interface Value {}
-
-  private interface Inserter<K, V> {
-    K insert(V value) throws InsertException;
-  }
-
-  private interface Queryer<K, V> {
-    QueryResult query(K key) throws QueryException;
-  }
-
-  private interface Updater<K, V> {
-    int update(K key, V value) throws UpdateException;
-  }
-
-  private interface Deleter<K> {
-    int delete(K key) throws DeleteException;
-  }
-
-  private static class KeyValueChunk extends DefaultChunk<Key, Value> {
-    private Inserter<Key, Value> mInserter;
-    private Updater<Key, Value> mUpdater;
-    private Queryer<Key, Value> mQueryer;
-    private Deleter<Key> mDeleter;
-
-    public KeyValueChunk(final Inserter<Key, Value> inserter, final Updater<Key, Value> updater, final Queryer<Key, Value> queryer, final Deleter<Key> deleter) {
-      mInserter = inserter;
-      mUpdater = updater;
-      mQueryer = queryer;
-      mDeleter = deleter;
-    }
-
-    @Override
-    protected Key doInsert(final Value value) throws InsertException {
-      return mInserter.insert(value);
-    }
-
-    @Override
-    protected QueryResult doQuery(final Key key) throws QueryException {
-      return mQueryer.query(key);
-    }
-
-    @Override
-    protected int doUpdate(final Key key, final Value value) throws UpdateException {
-      return mUpdater.update(key, value);
-    }
-
-    @Override
-    protected int doDelete(final Key key) throws DeleteException {
-      return mDeleter.delete(key);
-    }
-  }
 }

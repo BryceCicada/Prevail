@@ -11,6 +11,7 @@ import org.bailedout.prevail.event.*;
 import org.bailedout.prevail.event.dispatcher.EventBusEventDispatcher;
 import org.bailedout.prevail.event.factory.QueryEventFactory;
 import org.bailedout.prevail.exception.InsertException;
+import org.bailedout.prevail.exception.QueryException;
 
 import static org.bailedout.prevail.chunk.HashMapChunk.KeyFactory.*;
 
