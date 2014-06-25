@@ -11,7 +11,6 @@ import org.bailedout.prevail.event.*;
 import org.bailedout.prevail.event.dispatcher.EventBusEventDispatcher;
 import org.bailedout.prevail.event.factory.QueryEventFactory;
 import org.bailedout.prevail.exception.InsertException;
-import org.bailedout.prevail.exception.QueryException;
 
 import static org.bailedout.prevail.chunk.HashMapChunk.KeyFactory.*;
 
@@ -34,7 +33,7 @@ public class Main {
     // Alternatively, the EventFactory could be passed in with the query() method below.
     // The QueryEventFactory produces Events that match those handled by the subscriber
     // registered on the EventBus, above.
-    chunk.setEventFactory(new ExampleQueryEventFactory());
+    chunk.addEventFactory(new ExampleQueryEventFactory());
 
     // Create a DataModel to handle the chunk operations asynchronously.
     DataModel dataModel = new DataModel();

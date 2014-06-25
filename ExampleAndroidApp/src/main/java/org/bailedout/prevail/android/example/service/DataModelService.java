@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
 import com.google.common.eventbus.EventBus;
 import org.bailedout.prevail.android.example.TodoItem;
 import org.bailedout.prevail.android.example.event.database.DatabaseDeleteEventFactory;
@@ -16,10 +15,6 @@ import org.bailedout.prevail.datamodel.DataModel;
 import org.bailedout.prevail.event.dispatcher.EventBusEventDispatcher;
 import org.bailedout.prevail.event.dispatcher.EventDispatcher;
 import org.bailedout.prevail.event.dispatcher.ExecutorEventDispatcher;
-import org.bailedout.prevail.exception.DeleteException;
-import org.bailedout.prevail.exception.InsertException;
-import org.bailedout.prevail.exception.QueryException;
-import org.bailedout.prevail.exception.UpdateException;
 
 public class DataModelService extends Service {
 
@@ -53,9 +48,9 @@ public class DataModelService extends Service {
     // Alternatively, the EventFactory could be passed in with the query() method below.
     // The QueryEventFactory produces Events that match those handled by the subscriber
     // registered on the EventBus, above.
-    chunk.setEventFactory(new DatabaseQueryEventFactory<String, TodoItem>());
-    chunk.setEventFactory(new DatabaseDeleteEventFactory<String>());
-    chunk.setEventFactory(new DatabaseInsertEventFactory<String, TodoItem>());
+    chunk.addEventFactory(new DatabaseQueryEventFactory<String, TodoItem>());
+    chunk.addEventFactory(new DatabaseDeleteEventFactory<String>());
+    chunk.addEventFactory(new DatabaseInsertEventFactory<String, TodoItem>());
 
     // Register the Chunk on the DataModel.
     mDataModel.addChunk("database", chunk);
