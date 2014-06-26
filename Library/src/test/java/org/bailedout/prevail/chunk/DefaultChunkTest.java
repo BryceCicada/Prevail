@@ -1,8 +1,10 @@
 package org.bailedout.prevail.chunk;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Iterators;
 import com.google.common.eventbus.EventBus;
+import org.bailedout.prevail.Key;
+import org.bailedout.prevail.KeyValueChunk;
+import org.bailedout.prevail.Value;
 import org.bailedout.prevail.event.*;
 import org.bailedout.prevail.event.dispatcher.EventBusEventDispatcher;
 import org.bailedout.prevail.event.dispatcher.EventDispatcher;
@@ -18,8 +20,6 @@ import org.bailedout.prevail.exception.UpdateException;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Iterator;
 import java.util.concurrent.Executor;
 
 import static org.hamcrest.core.Is.is;
@@ -28,25 +28,17 @@ import static org.mockito.Mockito.*;
 
 public class DefaultChunkTest {
 
-  private Inserter<Key, Value> mInserter = mock(Inserter.class);
-  private Queryer<Key, Value> mQueryer = mock(Queryer.class);
-  private Updater<Key, Value> mUpdater = mock(Updater.class);
-  private Deleter<Key> mDeleter = mock(Deleter.class);
+  private KeyValueChunk.Inserter<Key, Value> mInserter = mock(KeyValueChunk.Inserter.class);
+  private KeyValueChunk.Queryer<Key, Value> mQueryer = mock(KeyValueChunk.Queryer.class);
+  private KeyValueChunk.Updater<Key, Value> mUpdater = mock(KeyValueChunk.Updater.class);
+  private KeyValueChunk.Deleter<Key> mDeleter = mock(KeyValueChunk.Deleter.class);
 
-  private Chunk<Key, Value> mChunk = new DefaultChunk<Key, Value>(mInserter, mQueryer, mUpdater, mDeleter);
+  private Chunk<Key, Value> mChunk = new KeyValueChunk(mInserter, mUpdater, mQueryer, mDeleter);
 
   private Key mKey = mock(Key.class);
   private Value mValue = mock(Value.class);
-  private QueryResult<Value> mQueryResult = new QueryResult<Value>() {
-    @Override
-    public void close() throws IOException {
-    }
 
-    @Override
-    public Iterator<Value> iterator() {
-      return Iterators.singletonIterator(mValue);
-    }
-  };
+  private QueryResult<Value> mQueryResult = new QueryResult.SingletonQueryResult<Value>(mValue);
 
   private Event mEvent = new Event(){};
 
@@ -152,9 +144,21 @@ public class DefaultChunkTest {
     final EventBus eventBus = mock(EventBus.class);
     final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
     mChunk.setEventDispatcher(eventDispatcher);
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
     mChunk.delete(mKey);
     verify(eventBus, times(1)).post(argThat(is(mEvent)));
+  }
+
+  @Test
+  public void testDeleteFiresMultipleEndEventsToEventBus() throws DeleteException {
+    final DeleteEventFactory<Key> eventFactory = mockDeleteEventFactory(Optional.<Event>absent(), Optional.of(mEvent), Optional.<Event>absent());
+    final EventBus eventBus = mock(EventBus.class);
+    final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
+    mChunk.setEventDispatcher(eventDispatcher);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.delete(mKey);
+    verify(eventBus, times(2)).post(argThat(is(mEvent)));
   }
 
   @Test
@@ -173,15 +177,27 @@ public class DefaultChunkTest {
     final EventBus eventBus = mock(EventBus.class);
     final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
     mChunk.setEventDispatcher(eventDispatcher);
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
     mChunk.delete(mKey);
     verify(eventBus, times(1)).post(argThat(is(mEvent)));
   }
 
   @Test
+  public void testDeleteFiresMultipleStartEventsToEventBus() throws DeleteException {
+    final DeleteEventFactory<Key> eventFactory = mockDeleteEventFactory(Optional.of(mEvent), Optional.<Event>absent(), Optional.<Event>absent());
+    final EventBus eventBus = mock(EventBus.class);
+    final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
+    mChunk.setEventDispatcher(eventDispatcher);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.delete(mKey);
+    verify(eventBus, times(2)).post(argThat(is(mEvent)));
+  }
+
+  @Test
   public void testDeleteRequestsEndEventFromInjectedEventFactory() throws DeleteException {
     final DeleteEventFactory<Key> eventFactory = mockDeleteEventFactory(Optional.<Event>absent(), Optional.of(mEvent), Optional.<Event>absent());
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
 
     mChunk.delete(mKey);
     verify(eventFactory, times(1)).endEvent(argThat(is(mKey)), intThat(is(1)));
@@ -190,7 +206,7 @@ public class DefaultChunkTest {
   @Test
   public void testDeleteRequestsStartEventFromInjectedEventFactory() throws DeleteException {
     final DeleteEventFactory<Key> eventFactory = mockDeleteEventFactory(Optional.of(mEvent), Optional.<Event>absent(), Optional.<Event>absent());
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
 
     mChunk.delete(mKey);
     verify(eventFactory, times(1)).startEvent(argThat(is(mKey)));
@@ -202,7 +218,7 @@ public class DefaultChunkTest {
 
     DeleteException deleteException = mockDeleteException();
 
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
     mChunk.delete(mKey);
     verify(eventFactory, times(1)).exceptionEvent(argThat(is(mKey)), argThat(is(deleteException)));
   }
@@ -218,7 +234,7 @@ public class DefaultChunkTest {
   public void testDeleteWithFactoryRequestsEndEventFromChunkEventFactory() throws DeleteException {
     final DeleteEventFactory<Key> chunkEventFactory = mockDeleteEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
     final DeleteEventFactory<Key> customEventFactory = mockDeleteEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
-    mChunk.setEventFactory(chunkEventFactory);
+    mChunk.addEventFactory(chunkEventFactory);
 
     mChunk.delete(mKey, customEventFactory);
     verify(chunkEventFactory, times(1)).endEvent(argThat(is(mKey)), intThat(is(1)));
@@ -235,7 +251,7 @@ public class DefaultChunkTest {
   public void testDeleteWithFactoryRequestsStartEventFromChunkEventFactory() throws DeleteException {
     final DeleteEventFactory<Key> chunkEventFactory = mockDeleteEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
     final DeleteEventFactory<Key> customEventFactory = mockDeleteEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
-    mChunk.setEventFactory(chunkEventFactory);
+    mChunk.addEventFactory(chunkEventFactory);
 
     mChunk.delete(mKey, customEventFactory);
     verify(chunkEventFactory, times(1)).startEvent(argThat(is(mKey)));
@@ -258,7 +274,7 @@ public class DefaultChunkTest {
 
     DeleteException deleteException = mockDeleteException();
 
-    mChunk.setEventFactory(chunkEventFactory);
+    mChunk.addEventFactory(chunkEventFactory);
     mChunk.delete(mKey, customEventFactory);
     verify(chunkEventFactory, times(1)).exceptionEvent(argThat(is(mKey)), argThat(is(deleteException)));
   }
@@ -297,9 +313,21 @@ public class DefaultChunkTest {
     final EventBus eventBus = mock(EventBus.class);
     final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
     mChunk.setEventDispatcher(eventDispatcher);
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
     mChunk.insert(mValue);
     verify(eventBus, times(1)).post(argThat(is(mEvent)));
+  }
+
+  @Test
+  public void testInsertFiresMultipleEndEventsToEventBus() throws InsertException {
+    final InsertEventFactory<Key, Value> eventFactory = mockInsertEventFactory(Optional.<Event>absent(), Optional.of(mEvent), Optional.<Event>absent());
+    final EventBus eventBus = mock(EventBus.class);
+    final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
+    mChunk.setEventDispatcher(eventDispatcher);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.insert(mValue);
+    verify(eventBus, times(2)).post(argThat(is(mEvent)));
   }
 
   @Test
@@ -318,15 +346,27 @@ public class DefaultChunkTest {
     final EventBus eventBus = mock(EventBus.class);
     final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
     mChunk.setEventDispatcher(eventDispatcher);
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
     mChunk.insert(mValue);
     verify(eventBus, times(1)).post(argThat(is(mEvent)));
   }
 
   @Test
+  public void testInsertFiresMultipleStartEventsToEventBus() throws InsertException {
+    final InsertEventFactory<Key, Value> eventFactory = mockInsertEventFactory(Optional.of(mEvent), Optional.<Event>absent(), Optional.<Event>absent());
+    final EventBus eventBus = mock(EventBus.class);
+    final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
+    mChunk.setEventDispatcher(eventDispatcher);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.insert(mValue);
+    verify(eventBus, times(2)).post(argThat(is(mEvent)));
+  }
+
+  @Test
   public void testInsertRequestsEndEventFromInjectedEventFactory() throws InsertException {
     final InsertEventFactory<Key, Value> eventFactory = mockInsertEventFactory(Optional.<Event>absent(), Optional.of(mEvent), Optional.<Event>absent());
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
 
     mChunk.insert(mValue);
     verify(eventFactory, times(1)).endEvent(argThat(is(mKey)), argThat(is(mValue)));
@@ -335,7 +375,7 @@ public class DefaultChunkTest {
   @Test
   public void testInsertRequestsStartEventFromInjectedEventFactory() throws InsertException {
     final InsertEventFactory<Key, Value> eventFactory = mockInsertEventFactory(Optional.of(mEvent), Optional.<Event>absent(), Optional.<Event>absent());
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
 
     mChunk.insert(mValue);
     verify(eventFactory, times(1)).startEvent(argThat(is(mValue)));
@@ -347,7 +387,7 @@ public class DefaultChunkTest {
 
     InsertException insertException = mockInsertException();
 
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
     mChunk.insert(mValue);
     verify(eventFactory, times(1)).exceptionEvent(argThat(is(mValue)), argThat(is(insertException)));
   }
@@ -363,7 +403,7 @@ public class DefaultChunkTest {
   public void testInsertWithFactoryRequestsEndEventFromChunkEventFactory() throws InsertException {
     final InsertEventFactory<Key, Value> chunkEventFactory = mockInsertEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
     final InsertEventFactory<Key, Value> customEventFactory = mockInsertEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
-    mChunk.setEventFactory(chunkEventFactory);
+    mChunk.addEventFactory(chunkEventFactory);
 
     mChunk.insert(mValue, customEventFactory);
     verify(chunkEventFactory, times(1)).endEvent(argThat(is(mKey)), argThat(is(mValue)));
@@ -380,7 +420,7 @@ public class DefaultChunkTest {
   public void testInsertWithFactoryRequestsStartEventFromChunkEventFactory() throws InsertException {
     final InsertEventFactory<Key, Value> chunkEventFactory = mockInsertEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
     final InsertEventFactory<Key, Value> customEventFactory = mockInsertEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
-    mChunk.setEventFactory(chunkEventFactory);
+    mChunk.addEventFactory(chunkEventFactory);
 
     mChunk.insert(mValue, customEventFactory);
     verify(chunkEventFactory, times(1)).startEvent(argThat(is(mValue)));
@@ -403,33 +443,9 @@ public class DefaultChunkTest {
 
     InsertException insertException = mockInsertException();
 
-    mChunk.setEventFactory(chunkEventFactory);
+    mChunk.addEventFactory(chunkEventFactory);
     mChunk.insert(mValue, customEventFactory);
     verify(chunkEventFactory, times(1)).exceptionEvent(argThat(is(mValue)), argThat(is(insertException)));
-  }
-
-  @Test
-  public void testNullDeleterInConstructorDoesNotCauseNPEOnDelete() throws DeleteException {
-    final Chunk<Key, Value> chunk = new DefaultChunk<Key, Value>(null, null, null, null);
-    chunk.delete(mKey);
-  }
-
-  @Test
-  public void testNullInserterInConstructorDoesNotCauseNPEOnInsertion() throws InsertException {
-    final Chunk<Key, Value> chunk = new DefaultChunk<Key, Value>(null, null, null, null);
-    chunk.insert(mValue);
-  }
-
-  @Test
-  public void testNullQueryerInConstructorDoesNotCauseNPEOnQuery() throws QueryException {
-    final Chunk<Key, Value> chunk = new DefaultChunk<Key, Value>(null, null, null, null);
-    chunk.query(mKey);
-  }
-
-  @Test
-  public void testNullUpdaterInConstructorDoesNotCauseNPEOnUpdate() throws UpdateException {
-    final Chunk<Key, Value> chunk = new DefaultChunk<Key, Value>(null, null, null, null);
-    chunk.update(mKey, mValue);
   }
 
   @Test
@@ -466,9 +482,21 @@ public class DefaultChunkTest {
     final EventBus eventBus = mock(EventBus.class);
     final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
     mChunk.setEventDispatcher(eventDispatcher);
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
     mChunk.query(mKey);
     verify(eventBus, times(1)).post(argThat(is(mEvent)));
+  }
+
+  @Test
+  public void testQueryFiresMultipleEndEventsToEventBus() throws QueryException {
+    final QueryEventFactory<Key, Value> eventFactory = mockQueryEventFactory(Optional.<Event>absent(), Optional.of(mEvent), Optional.<Event>absent());
+    final EventBus eventBus = mock(EventBus.class);
+    final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
+    mChunk.setEventDispatcher(eventDispatcher);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.query(mKey);
+    verify(eventBus, times(2)).post(argThat(is(mEvent)));
   }
 
   @Test
@@ -487,15 +515,27 @@ public class DefaultChunkTest {
     final EventBus eventBus = mock(EventBus.class);
     final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
     mChunk.setEventDispatcher(eventDispatcher);
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
     mChunk.query(mKey);
     verify(eventBus, times(1)).post(argThat(is(mEvent)));
   }
 
   @Test
+  public void testQueryFiresMultipleStartEventsToEventBus() throws QueryException {
+    final QueryEventFactory<Key, Value> eventFactory = mockQueryEventFactory(Optional.of(mEvent), Optional.<Event>absent(), Optional.<Event>absent());
+    final EventBus eventBus = mock(EventBus.class);
+    final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
+    mChunk.setEventDispatcher(eventDispatcher);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.query(mKey);
+    verify(eventBus, times(2)).post(argThat(is(mEvent)));
+  }
+
+  @Test
   public void testQueryRequestsEndEventFromInjectedEventFactory() throws QueryException {
     final QueryEventFactory<Key, Value> eventFactory = mockQueryEventFactory(Optional.<Event>absent(), Optional.of(mEvent), Optional.<Event>absent());
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
 
     mChunk.query(mKey);
     verify(eventFactory, times(1)).endEvent(argThat(is(mKey)), argThat(is(mQueryResult)));
@@ -504,7 +544,7 @@ public class DefaultChunkTest {
   @Test
   public void testQueryRequestsStartEventFromInjectedEventFactory() throws QueryException {
     final QueryEventFactory<Key, Value> eventFactory = mockQueryEventFactory(Optional.of(mEvent), Optional.<Event>absent(), Optional.<Event>absent());
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
 
     mChunk.query(mKey);
     verify(eventFactory, times(1)).startEvent(argThat(is(mKey)));
@@ -516,7 +556,7 @@ public class DefaultChunkTest {
 
     QueryException queryException = mockQueryException();
 
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
     mChunk.query(mKey);
     verify(eventFactory, times(1)).exceptionEvent(argThat(is(mKey)), argThat(is(queryException)));
   }
@@ -532,7 +572,7 @@ public class DefaultChunkTest {
   public void testQueryWithFactoryRequestsEndEventFromChunkEventFactory() throws QueryException {
     final QueryEventFactory<Key, Value> chunkEventFactory = mockQueryEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
     final QueryEventFactory<Key, Value> customEventFactory = mockQueryEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
-    mChunk.setEventFactory(chunkEventFactory);
+    mChunk.addEventFactory(chunkEventFactory);
 
     mChunk.query(mKey, customEventFactory);
     verify(chunkEventFactory, times(1)).endEvent(argThat(is(mKey)), argThat(is(mQueryResult)));
@@ -549,7 +589,7 @@ public class DefaultChunkTest {
   public void testQueryWithFactoryRequestsStartEventFromChunkEventFactory() throws QueryException {
     final QueryEventFactory<Key, Value> chunkEventFactory = mockQueryEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
     final QueryEventFactory<Key, Value> customEventFactory = mockQueryEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
-    mChunk.setEventFactory(chunkEventFactory);
+    mChunk.addEventFactory(chunkEventFactory);
 
     mChunk.query(mKey, customEventFactory);
     verify(chunkEventFactory, times(1)).startEvent(argThat(is(mKey)));
@@ -572,7 +612,7 @@ public class DefaultChunkTest {
 
     QueryException queryException = mockQueryException();
 
-    mChunk.setEventFactory(chunkEventFactory);
+    mChunk.addEventFactory(chunkEventFactory);
     mChunk.query(mKey, customEventFactory);
     verify(chunkEventFactory, times(1)).exceptionEvent(argThat(is(mKey)), argThat(is(queryException)));
   }
@@ -611,9 +651,21 @@ public class DefaultChunkTest {
     final EventBus eventBus = mock(EventBus.class);
     final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
     mChunk.setEventDispatcher(eventDispatcher);
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
     mChunk.update(mKey, mValue);
     verify(eventBus, times(1)).post(argThat(is(mEvent)));
+  }
+
+  @Test
+  public void testUpdateFiresMultipleEndEventsToEventBus() throws UpdateException {
+    final UpdateEventFactory<Key, Value> eventFactory = mockUpdateEventFactory(Optional.<Event>absent(), Optional.of(mEvent), Optional.<Event>absent());
+    final EventBus eventBus = mock(EventBus.class);
+    final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
+    mChunk.setEventDispatcher(eventDispatcher);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.update(mKey, mValue);
+    verify(eventBus, times(2)).post(argThat(is(mEvent)));
   }
 
   @Test
@@ -632,15 +684,27 @@ public class DefaultChunkTest {
     final EventBus eventBus = mock(EventBus.class);
     final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
     mChunk.setEventDispatcher(eventDispatcher);
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
     mChunk.update(mKey, mValue);
     verify(eventBus, times(1)).post(argThat(is(mEvent)));
   }
 
   @Test
+  public void testUpdateFiresMultipleStartEventToEventBus() throws UpdateException {
+    final UpdateEventFactory<Key, Value> eventFactory = mockUpdateEventFactory(Optional.of(mEvent), Optional.<Event>absent(), Optional.<Event>absent());
+    final EventBus eventBus = mock(EventBus.class);
+    final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
+    mChunk.setEventDispatcher(eventDispatcher);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
+    mChunk.update(mKey, mValue);
+    verify(eventBus, times(2)).post(argThat(is(mEvent)));
+  }
+
+  @Test
   public void testUpdateRequestsEndEventFromInjectedEventFactory() throws UpdateException {
     final UpdateEventFactory<Key, Value> eventFactory = mockUpdateEventFactory(Optional.<Event>absent(), Optional.of(mEvent), Optional.<Event>absent());
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
 
     mChunk.update(mKey, mValue);
     verify(eventFactory, times(1)).endEvent(argThat(is(mKey)), argThat(is(mValue)), intThat(is(1)));
@@ -649,7 +713,7 @@ public class DefaultChunkTest {
   @Test
   public void testUpdateRequestsStartEventFromInjectedEventFactory() throws UpdateException {
     final UpdateEventFactory<Key, Value> eventFactory = mockUpdateEventFactory(Optional.of(mEvent), Optional.<Event>absent(), Optional.<Event>absent());
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
 
     mChunk.update(mKey, mValue);
     verify(eventFactory, times(1)).startEvent(argThat(is(mKey)), argThat(is(mValue)));
@@ -661,7 +725,7 @@ public class DefaultChunkTest {
 
     UpdateException updateException = mockUpdateException();
 
-    mChunk.setEventFactory(eventFactory);
+    mChunk.addEventFactory(eventFactory);
     mChunk.update(mKey, mValue);
     verify(eventFactory, times(1)).exceptionEvent(argThat(is(mKey)), argThat(is(mValue)), argThat(is(updateException)));
   }
@@ -677,7 +741,7 @@ public class DefaultChunkTest {
   public void testUpdateWithFactoryRequestsEndEventFromChunkEventFactory() throws UpdateException {
     final UpdateEventFactory<Key, Value> chunkEventFactory = mockUpdateEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
     final UpdateEventFactory<Key, Value> customEventFactory = mockUpdateEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
-    mChunk.setEventFactory(chunkEventFactory);
+    mChunk.addEventFactory(chunkEventFactory);
 
     mChunk.update(mKey, mValue, customEventFactory);
     verify(chunkEventFactory, times(1)).endEvent(argThat(is(mKey)), argThat(is(mValue)), intThat(is(1)));
@@ -694,7 +758,7 @@ public class DefaultChunkTest {
   public void testUpdateWithFactoryRequestsStartEventFromChunkEventFactory() throws UpdateException {
     final UpdateEventFactory<Key, Value> chunkEventFactory = mockUpdateEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
     final UpdateEventFactory<Key, Value> customEventFactory = mockUpdateEventFactory(Optional.<Event>absent(), Optional.<Event>absent(), Optional.<Event>absent());
-    mChunk.setEventFactory(chunkEventFactory);
+    mChunk.addEventFactory(chunkEventFactory);
 
     mChunk.update(mKey, mValue, customEventFactory);
     verify(chunkEventFactory, times(1)).startEvent(argThat(is(mKey)), argThat(is(mValue)));
@@ -717,7 +781,7 @@ public class DefaultChunkTest {
 
     UpdateException updateException = mockUpdateException();
 
-    mChunk.setEventFactory(chunkEventFactory);
+    mChunk.addEventFactory(chunkEventFactory);
     mChunk.update(mKey, mValue, customEventFactory);
     verify(chunkEventFactory, times(1)).exceptionEvent(argThat(is(mKey)), argThat(is(mValue)), argThat(is(updateException)));
   }

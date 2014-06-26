@@ -57,22 +57,22 @@ public interface Chunk<K, V> {
   /**
    * Set the default InsertEventFactory to use when generating insert events.
    */
-  void setEventFactory(InsertEventFactory insertEventFactory);
+  void addEventFactory(InsertEventFactory insertEventFactory);
 
   /**
    * Set the default QueryEventFactory to use when generating query events.
    */
-  void setEventFactory(QueryEventFactory queryEventFactory);
+  void addEventFactory(QueryEventFactory queryEventFactory);
 
   /**
    * Set the default UpdateEventFactory to use when generating update events.
    */
-  void setEventFactory(UpdateEventFactory updateEventFactory);
+  void addEventFactory(UpdateEventFactory updateEventFactory);
 
   /**
    * Set the default DeleteEventFactory to use when generating delete events.
    */
-  void setEventFactory(DeleteEventFactory deleteEventFactory);
+  void addEventFactory(DeleteEventFactory deleteEventFactory);
 
   public static class EmptyChunk<K, V> implements Chunk<K, V> {
 
@@ -102,22 +102,22 @@ public interface Chunk<K, V> {
     }
 
     @Override
-    public void setEventFactory(final InsertEventFactory insertEventFactory) {
+    public void addEventFactory(final InsertEventFactory insertEventFactory) {
       // Empty implementation
     }
 
     @Override
-    public void setEventFactory(final QueryEventFactory queryEventFactory) {
+    public void addEventFactory(final QueryEventFactory queryEventFactory) {
       // Empty implementation
     }
 
     @Override
-    public void setEventFactory(final UpdateEventFactory updateEventFactory) {
+    public void addEventFactory(final UpdateEventFactory updateEventFactory) {
       // Empty implementation
     }
 
     @Override
-    public void setEventFactory(final DeleteEventFactory deleteEventFactory) {
+    public void addEventFactory(final DeleteEventFactory deleteEventFactory) {
       // Empty implementation
     }
   }

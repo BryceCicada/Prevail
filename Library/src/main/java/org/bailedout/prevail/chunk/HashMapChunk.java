@@ -13,87 +13,48 @@ import java.util.Map;
 public class HashMapChunk<K, V> extends DefaultChunk<K, V> {
 
   private Map<K, V> mMap = new HashMap<K, V>();
+  private KeyFactory<K, V> mKeyFactory;
 
   public HashMapChunk(KeyFactory<K, V> keyFactory) {
-    init(new HashMapInserter<K, V>(mMap, keyFactory),
-         new HashMapQueryer<K, V>(mMap),
-         new HashMapUpdater<K, V>(mMap),
-         new HashMapDeleter<K,V>(mMap));
+    mKeyFactory = keyFactory;
   }
 
-  private static class HashMapInserter<K, V> implements Inserter<K, V> {
-    private final Map<K, V> mMap;
-    private KeyFactory<K, V> mKeyFactory;
+  @Override
+  protected K doInsert(final V value) throws InsertException {
+    K key = mKeyFactory.createKey(value);
+    mMap.put(key, value);
+    return key;
+  }
 
-    HashMapInserter(Map<K, V> map, KeyFactory<K, V> keyFactory) {
-      mMap = map;
-      mKeyFactory = keyFactory;
+  @Override
+  protected QueryResult<V> doQuery(final K key) throws QueryException {
+    final QueryResult<V> result;
+    if (mMap.containsKey(key)) {
+      result = new QueryResult.SingletonQueryResult<V>(mMap.get(key));
+    } else {
+      result = new QueryResult.EmptyQueryResult<V>();
     }
+    return result;
+  }
 
-    @Override
-    public K insert(final V value) throws InsertException {
-      K key = mKeyFactory.createKey(value);
+  @Override
+  protected int doUpdate(final K key, final V value) throws UpdateException {
+    int numUpdates = 0;
+    if (mMap.containsKey(key)) {
       mMap.put(key, value);
-      return key;
+      numUpdates = 1;
     }
+    return numUpdates;
   }
 
-  private static class HashMapQueryer<K, V> implements Queryer<K, V> {
-    private final Map<K, V> mMap;
-
-    HashMapQueryer(Map<K, V> map) {
-      mMap = map;
+  @Override
+  protected int doDelete(final K key) throws DeleteException {
+    int numUpdates = 0;
+    if (mMap.containsKey(key)) {
+      mMap.remove(key);
+      numUpdates = 1;
     }
-
-    @Override
-    public QueryResult query(final K key) throws QueryException {
-      return new QueryResult() {
-        @Override
-        public void close() throws IOException {
-        }
-
-        @Override
-        public Iterator iterator() {
-          return mMap.values().iterator();
-        }
-      };
-    }
-  }
-
-  private static class HashMapUpdater<K, V> implements Updater<K, V> {
-    private final Map<K, V> mMap;
-
-    HashMapUpdater(Map<K, V> map) {
-      mMap = map;
-    }
-
-    @Override
-    public int update(final K key, final V data) throws UpdateException {
-      int numUpdates = 0;
-      if (mMap.containsKey(key)) {
-        mMap.put(key, data);
-        numUpdates = 1;
-      }
-      return numUpdates;
-    }
-  }
-
-  private static class HashMapDeleter<K, V> implements Deleter<K> {
-    private final Map<K, V> mMap;
-
-    HashMapDeleter(Map<K, V> map) {
-      mMap = map;
-    }
-
-    @Override
-    public int delete(final K key) throws DeleteException {
-      int numUpdates = 0;
-      if (mMap.containsKey(key)) {
-        mMap.remove(key);
-        numUpdates = 1;
-      }
-      return numUpdates;
-    }
+    return numUpdates;
   }
 
   @Override

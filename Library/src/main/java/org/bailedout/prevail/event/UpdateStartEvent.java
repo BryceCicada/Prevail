@@ -1,6 +1,6 @@
 package org.bailedout.prevail.event;
 
-public class UpdateStartEvent<K, V> implements UpdateEvent, StartEvent {
+public class UpdateStartEvent<K, V> implements UpdateEvent, DataChangeStartEvent {
   private final K mKey;
   private final V mValue;
 

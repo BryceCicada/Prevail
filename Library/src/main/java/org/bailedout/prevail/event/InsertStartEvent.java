@@ -1,6 +1,6 @@
 package org.bailedout.prevail.event;
 
-public class InsertStartEvent<V> implements InsertEvent, StartEvent {
+public class InsertStartEvent<V> implements InsertEvent, DataChangeStartEvent {
   private final V mValue;
 
   public InsertStartEvent(V value) {

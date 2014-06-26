@@ -1,4 +1,3 @@
-include ':ExampleAndroidApp'
+include ':AndroidLibrary', 'TodoList'
 include 'ExampleJavaApp'
 include 'Library'
-
