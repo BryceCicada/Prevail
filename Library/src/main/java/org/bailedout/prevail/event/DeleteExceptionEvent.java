@@ -1,6 +1,6 @@
 package org.bailedout.prevail.event;
 
-public class DeleteExceptionEvent<K> implements DeleteEvent, ExceptionEvent {
+public class DeleteExceptionEvent<K> implements DeleteEvent, DataChangeExceptionEvent {
   private final K mKey;
   private final Exception mExeption;
 

@@ -1,7 +1,8 @@
 package org.bailedout.prevail.chunk;
 
 import com.google.common.base.Optional;
-import org.bailedout.prevail.event.*;
+import com.google.common.collect.Lists;
+import org.bailedout.prevail.event.Event;
 import org.bailedout.prevail.event.dispatcher.EventDispatcher;
 import org.bailedout.prevail.event.factory.DeleteEventFactory;
 import org.bailedout.prevail.event.factory.InsertEventFactory;
@@ -12,35 +13,22 @@ import org.bailedout.prevail.exception.InsertException;
 import org.bailedout.prevail.exception.QueryException;
 import org.bailedout.prevail.exception.UpdateException;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.bailedout.prevail.event.dispatcher.EventDispatcher.EmptyEventDispatcher;
 
-public class DefaultChunk<K, V> implements Chunk<K, V> {
+public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
 
-  private Inserter<K, V> mInserter;
-  private Queryer<K, V> mQueryer;
-  private Updater<K, V> mUpdater;
-  private Deleter<K> mDeleter;
-
-  private InsertEventFactory mInsertEventFactory = new InsertEventFactory.EmptyInsertEventFactory();
-  private QueryEventFactory mQueryEventFactory = new QueryEventFactory.EmptyQueryEventFactory();
-  private UpdateEventFactory mUpdateEventFactory = new UpdateEventFactory.EmptyUpdateEventFactory();
-  private DeleteEventFactory mDeleteEventFactory = new DeleteEventFactory.EmptyDeleteEventFactory();
+  private List<InsertEventFactory> mInsertEventFactories = new CopyOnWriteArrayList<InsertEventFactory>();
+  private List<QueryEventFactory> mQueryEventFactories = new CopyOnWriteArrayList<QueryEventFactory>();
+  private List<UpdateEventFactory> mUpdateEventFactories = new CopyOnWriteArrayList<UpdateEventFactory>();
+  private List<DeleteEventFactory> mDeleteEventFactories = new CopyOnWriteArrayList<DeleteEventFactory>();
 
   private EventDispatcher mEventDispatcher = new EmptyEventDispatcher();
 
   public DefaultChunk() {
-  }
-
-  public DefaultChunk(final Inserter inserter, final Queryer queryer, final Updater updater, final Deleter deleter) {
-    init(inserter, queryer, updater, deleter);
-  }
-
-  protected void init(final Inserter inserter, final Queryer queryer, final Updater updater, final Deleter deleter) {
-    mInserter = Optional.fromNullable(inserter).or(new Inserter.EmptyInserter());
-    mQueryer = Optional.fromNullable(queryer).or(new Queryer.EmptyQueryer());
-    mUpdater = Optional.fromNullable(updater).or(new Updater.EmptyUpdater());
-    mDeleter = Optional.fromNullable(deleter).or(new Deleter.EmptyDeleter());
   }
 
   @Override
@@ -48,84 +36,145 @@ public class DefaultChunk<K, V> implements Chunk<K, V> {
     InsertEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new InsertEventFactory[0]);
 
     try {
-      sendStartEvent(mInsertEventFactory, value);
-      sendStartEvent(factories, value);
+      sendInsertStartEvent(mInsertEventFactories, value);
+      sendInsertStartEvent(factories, value);
 
-      final K key = mInserter.insert(value);
+      final K key = doInsert(value);
 
-      sendEndEvent(factories, key, value);
-      sendEndEvent(mInsertEventFactory, key, value);
+      sendInsertEndEvent(factories, key, value);
+      sendInsertEndEvent(mInsertEventFactories, key, value);
 
       return key;
     } catch (InsertException e) {
-      sendExceptionEvent(factories, value, e);
-      sendExceptionEvent(mInsertEventFactory, value, e);
+      sendInsertExceptionEvent(factories, value, e);
+      sendInsertExceptionEvent(mInsertEventFactories, value, e);
       throw e;
     }
   }
+
+  /**
+   * Insert a value to the Chunk.
+   * <p>
+   * This method should be overriden by subclasses in order to store the value in an implementation
+   * specific manner. There is no requirement to send any events from this method.
+   * <p>
+   * The semantics of this method is implementation specific.  That is, some implementations may choose
+   * to throw an InsertException if the given key already exists in the Chunk, whilst other implementations
+   * may wish to replace the value in that case.
+   *
+   * @param value  The value to be stored
+   * @return a Key into the chunk for later retrieval of the given value.
+   * @throws InsertException
+   */
+  protected abstract K doInsert(final V value) throws InsertException;
 
   @Override
   public QueryResult<V> query(final K key, final QueryEventFactory<K, V>... customEventFactories) throws QueryException {
     QueryEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new QueryEventFactory[0]);
 
     try {
-      sendStartEvent(mQueryEventFactory, key);
-      sendStartEvent(factories, key);
+      sendQueryStartEvent(mQueryEventFactories, key);
+      sendQueryStartEvent(factories, key);
 
-      final QueryResult values = mQueryer.query(key);
+      final QueryResult values = doQuery(key);
 
-      sendEndEvent(factories, key, values);
-      sendEndEvent(mQueryEventFactory, key, values);
+      sendQueryEndEvent(factories, key, values);
+      sendQueryEndEvent(mQueryEventFactories, key, values);
 
       return values;
     } catch (QueryException e) {
-      sendExceptionEvent(factories, key, e);
-      sendExceptionEvent(mQueryEventFactory, key, e);
+      sendQueryExceptionEvent(factories, key, e);
+      sendQueryExceptionEvent(mQueryEventFactories, key, e);
       throw e;
     }
   }
+
+  /**
+   * Query values from the Chunk.
+   * <p>
+   * This method should be overriden by subclasses in order to obtain the values in an implementation
+   * specific manner. There is no requirement to send any events from this method.
+   *
+   * @param key The key to obtain the required values
+   * @return a QueryResult containing the returned values.
+   * @throws QueryException
+   */
+  protected abstract QueryResult doQuery(final K key) throws QueryException;
 
   @Override
   public int update(final K key, final V value, final UpdateEventFactory<K, V>... customEventFactories) throws UpdateException {
     UpdateEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new UpdateEventFactory[0]);
 
     try {
-      sendStartEvent(mUpdateEventFactory, key, value);
-      sendStartEvent(factories, key, value);
+      sendUpdateStartEvent(mUpdateEventFactories, key, value);
+      sendUpdateStartEvent(factories, key, value);
 
-      final int i = mUpdater.update(key, value);
+      final int i = doUpdate(key, value);
 
-      sendEndEvent(factories, key, value, i);
-      sendEndEvent(mUpdateEventFactory, key, value, i);
+      sendUpdateEndEvent(factories, key, value, i);
+      sendUpdateEndEvent(mUpdateEventFactories, key, value, i);
 
       return i;
     } catch (UpdateException e) {
-      sendExceptionEvent(factories, key, value, e);
-      sendExceptionEvent(mUpdateEventFactory, key, value, e);
+      sendUpdateExceptionEvent(factories, key, value, e);
+      sendUpdateExceptionEvent(mUpdateEventFactories, key, value, e);
       throw e;
     }
   }
+
+  /**
+   * Update the value at the given key in the Chunk.
+   * <p>
+   * This method should be overriden by subclasses in order to update the value in an implementation
+   * specific manner. There is no requirement to send any events from this method.
+   * <p>
+   * The semantics of this method is implementation specific.  That is, some implementations may choose
+   * to throw an UpdateException if the given key does not exist in the Chunk, whilst other implementations
+   * may wish to insert the value in that case.
+   *
+   * @param key The key of the value to be updated.
+   * @param value  The value to be stored.
+   * @return the number of values updated.
+   * @throws UpdateException
+   */
+  protected abstract int doUpdate(final K key, final V value) throws UpdateException;
 
   @Override
   public int delete(final K key, final DeleteEventFactory<K>... customEventFactories) throws DeleteException {
     DeleteEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new DeleteEventFactory[0]);
 
     try {
-      sendStartEvent(mDeleteEventFactory, key);
-      sendStartEvent(customEventFactories, key);
+      sendDeleteStartEvent(mDeleteEventFactories, key);
+      sendDeleteStartEvent(customEventFactories, key);
 
-      final int i = mDeleter.delete(key);
+      final int i = doDelete(key);
 
-      sendEndEvent(customEventFactories, key, i);
-      sendEndEvent(mDeleteEventFactory, key, i);
+      sendDeleteEndEvent(customEventFactories, key, i);
+      sendDeleteEndEvent(mDeleteEventFactories, key, i);
 
       return i;
     } catch (DeleteException e) {
-      sendExceptionEvent(factories, key, e);
-      sendExceptionEvent(mDeleteEventFactory, key, e);
+      sendDeleteExceptionEvent(factories, key, e);
+      sendDeleteExceptionEvent(mDeleteEventFactories, key, e);
       throw e;
     }
   }
+
+  /**
+   * Update the value at the given key in the Chunk.
+   * <p>
+   * This method should be overriden by subclasses in order to update the value in an implementation
+   * specific manner. There is no requirement to send any events from this method.
+   * <p>
+   * The semantics of this method is implementation specific.  That is, some implementations may choose
+   * to throw an DeleteException if the given key does not exist in the Chunk, whilst other implementations
+   * may wish to do nothing.
+   *
+   * @param key The key of the value to be deleted.
+   * @return the number of values deleted.
+   * @throws DeleteException
+   */
+  protected abstract int doDelete(final K key) throws DeleteException;
 
   @Override
   public void setEventDispatcher(final EventDispatcher eventDispatcher) {
@@ -133,178 +182,226 @@ public class DefaultChunk<K, V> implements Chunk<K, V> {
   }
 
   @Override
-  public void setEventFactory(final InsertEventFactory insertEventFactory) {
-    mInsertEventFactory = checkNotNull(insertEventFactory);
+  public void addEventFactory(final InsertEventFactory insertEventFactory) {
+    mInsertEventFactories.add(checkNotNull(insertEventFactory));
   }
 
   @Override
-  public void setEventFactory(final QueryEventFactory queryEventFactory) {
-    mQueryEventFactory = checkNotNull(queryEventFactory);
+  public void addEventFactory(final QueryEventFactory queryEventFactory) {
+    mQueryEventFactories.add(checkNotNull(queryEventFactory));
   }
 
   @Override
-  public void setEventFactory(final UpdateEventFactory updateEventFactory) {
-    mUpdateEventFactory = checkNotNull(updateEventFactory);
+  public void addEventFactory(final UpdateEventFactory updateEventFactory) {
+    mUpdateEventFactories.add(checkNotNull(updateEventFactory));
   }
 
   @Override
-  public void setEventFactory(final DeleteEventFactory deleteEventFactory) {
-    mDeleteEventFactory = checkNotNull(deleteEventFactory);
+  public void addEventFactory(final DeleteEventFactory deleteEventFactory) {
+    mDeleteEventFactories.add(checkNotNull(deleteEventFactory));
   }
 
-  private void sendEndEvent(final InsertEventFactory eventFactory, final K key, final V value) {
+  private void sendInsertEndEvent(final InsertEventFactory eventFactory, final K key, final V value) {
     final Optional<Event> endEvent = eventFactory.endEvent(key, value);
     if (endEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(endEvent.get());
     }
   }
 
-  private void sendEndEvent(final InsertEventFactory[] eventFactories, final K key, final V value) {
+  private void sendInsertEndEvent(final InsertEventFactory[] eventFactories, final K key, final V value) {
+    sendInsertEndEvent(Lists.newArrayList(eventFactories), key, value);
+  }
+
+  private void sendInsertEndEvent(final Iterable<InsertEventFactory> eventFactories, final K key, final V value) {
     for (InsertEventFactory eventFactory : eventFactories) {
-      sendEndEvent(eventFactory, key, value);
+      sendInsertEndEvent(eventFactory, key, value);
     }
   }
 
-  private void sendEndEvent(final QueryEventFactory eventFactory, final K key, final Iterable<V> values) {
+  private void sendQueryEndEvent(final QueryEventFactory eventFactory, final K key, final Iterable<V> values) {
     final Optional<Event> endEvent = eventFactory.endEvent(key, values);
     if (endEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(endEvent.get());
     }
   }
 
-  private void sendEndEvent(final QueryEventFactory[] eventFactories, final K key, final Iterable<V> value) {
+  private void sendQueryEndEvent(final QueryEventFactory[] eventFactories, final K key, final Iterable<V> value) {
+    sendQueryEndEvent(Lists.newArrayList(eventFactories), key, value);
+  }
+
+  private void sendQueryEndEvent(final Iterable<QueryEventFactory> eventFactories, final K key, final Iterable<V> value) {
     for (QueryEventFactory eventFactory : eventFactories) {
-      sendEndEvent(eventFactory, key, value);
+      sendQueryEndEvent(eventFactory, key, value);
     }
   }
 
-  private void sendEndEvent(final UpdateEventFactory eventFactory, final K key, final V value, final int numValuesUpdated) {
+  private void sendUpdateEndEvent(final UpdateEventFactory eventFactory, final K key, final V value, final int numValuesUpdated) {
     final Optional<Event> endEvent = eventFactory.endEvent(key, value, numValuesUpdated);
     if (endEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(endEvent.get());
     }
   }
 
-  private void sendEndEvent(final UpdateEventFactory[] eventFactories, final K key, final V value, final int numValuesUpdated) {
+  private void sendUpdateEndEvent(final UpdateEventFactory[] eventFactories, final K key, final V value, final int numValuesUpdated) {
+    sendUpdateEndEvent(Lists.newArrayList(eventFactories), key, value, numValuesUpdated);
+  }
+
+  private void sendUpdateEndEvent(final Iterable<UpdateEventFactory> eventFactories, final K key, final V value, final int numValuesUpdated) {
     for (UpdateEventFactory eventFactory : eventFactories) {
-      sendEndEvent(eventFactory, key, value, numValuesUpdated);
+      sendUpdateEndEvent(eventFactory, key, value, numValuesUpdated);
     }
   }
 
-  private void sendEndEvent(final DeleteEventFactory eventFactory, final K key, final int numValuesDeleted) {
+  private void sendDeleteEndEvent(final DeleteEventFactory eventFactory, final K key, final int numValuesDeleted) {
     final Optional<Event> endEvent = eventFactory.endEvent(key, numValuesDeleted);
     if (endEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(endEvent.get());
     }
   }
 
-  private void sendEndEvent(final DeleteEventFactory[] eventFactories, final K key, final int numValuesDeleted) {
+  private void sendDeleteEndEvent(final DeleteEventFactory[] eventFactories, final K key, final int numValuesDeleted) {
+    sendDeleteEndEvent(Lists.newArrayList(eventFactories), key, numValuesDeleted);
+  }
+
+  private void sendDeleteEndEvent(final Iterable<DeleteEventFactory> eventFactories, final K key, final int numValuesDeleted) {
     for (DeleteEventFactory eventFactory : eventFactories) {
-      sendEndEvent(eventFactory, key, numValuesDeleted);
+      sendDeleteEndEvent(eventFactory, key, numValuesDeleted);
     }
   }
 
-  private void sendExceptionEvent(final InsertEventFactory eventFactory, final V value, final InsertException exception) {
+  private void sendInsertExceptionEvent(final InsertEventFactory eventFactory, final V value, final InsertException exception) {
     final Optional<Event> exceptionEvent = eventFactory.exceptionEvent(value, exception);
     if (exceptionEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(exceptionEvent.get());
     }
   }
 
-  private void sendExceptionEvent(final InsertEventFactory[] eventFactories, final V value, final InsertException exception) {
+  private void sendInsertExceptionEvent(final InsertEventFactory[] eventFactories, final V value, final InsertException exception) {
+    sendInsertExceptionEvent(Lists.newArrayList(eventFactories), value, exception);
+  }
+
+  private void sendInsertExceptionEvent(final Iterable<InsertEventFactory> eventFactories, final V value, final InsertException exception) {
     for (InsertEventFactory eventFactory : eventFactories) {
-      sendExceptionEvent(eventFactory, value, exception);
+      sendInsertExceptionEvent(eventFactory, value, exception);
     }
   }
 
-  private void sendExceptionEvent(final QueryEventFactory eventFactory, final K key, final QueryException exception) {
+  private void sendQueryExceptionEvent(final QueryEventFactory eventFactory, final K key, final QueryException exception) {
     final Optional<Event> exceptionEvent = eventFactory.exceptionEvent(key, exception);
     if (exceptionEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(exceptionEvent.get());
     }
   }
 
-  private void sendExceptionEvent(final QueryEventFactory[] eventFactories, final K key, final QueryException exception) {
+  private void sendQueryExceptionEvent(final QueryEventFactory[] eventFactories, final K key, final QueryException exception) {
+    sendQueryExceptionEvent(Lists.newArrayList(eventFactories), key, exception);
+  }
+
+  private void sendQueryExceptionEvent(final Iterable<QueryEventFactory> eventFactories, final K key, final QueryException exception) {
     for (QueryEventFactory eventFactory : eventFactories) {
-      sendExceptionEvent(eventFactory, key, exception);
+      sendQueryExceptionEvent(eventFactory, key, exception);
     }
   }
 
-  private void sendExceptionEvent(final UpdateEventFactory eventFactory, final K key, final V value, final UpdateException exception) {
+  private void sendUpdateExceptionEvent(final UpdateEventFactory eventFactory, final K key, final V value, final UpdateException exception) {
     final Optional<Event> exceptionEvent = eventFactory.exceptionEvent(key, value, exception);
     if (exceptionEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(exceptionEvent.get());
     }
   }
 
-  private void sendExceptionEvent(final UpdateEventFactory[] eventFactories, final K key, final V value, final UpdateException exception) {
+  private void sendUpdateExceptionEvent(final UpdateEventFactory[] eventFactories, final K key, final V value, final UpdateException exception) {
+    sendUpdateExceptionEvent(Lists.newArrayList(eventFactories), key, value, exception);
+  }
+
+  private void sendUpdateExceptionEvent(final Iterable<UpdateEventFactory> eventFactories, final K key, final V value, final UpdateException exception) {
     for (UpdateEventFactory eventFactory : eventFactories) {
-      sendExceptionEvent(eventFactory, key, value, exception);
+      sendUpdateExceptionEvent(eventFactory, key, value, exception);
     }
   }
 
-  private void sendExceptionEvent(final DeleteEventFactory eventFactory, final K key, final DeleteException exception) {
+  private void sendDeleteExceptionEvent(final DeleteEventFactory eventFactory, final K key, final DeleteException exception) {
     final Optional<Event> exceptionEvent = eventFactory.exceptionEvent(key, exception);
     if (exceptionEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(exceptionEvent.get());
     }
   }
 
-  private void sendExceptionEvent(final DeleteEventFactory[] eventFactories, final K key, final DeleteException exception) {
+  private void sendDeleteExceptionEvent(final DeleteEventFactory[] eventFactories, final K key, final DeleteException exception) {
+    sendDeleteExceptionEvent(Lists.newArrayList(eventFactories), key, exception);
+  }
+
+  private void sendDeleteExceptionEvent(final Iterable<DeleteEventFactory> eventFactories, final K key, final DeleteException exception) {
     for (DeleteEventFactory eventFactory : eventFactories) {
-      sendExceptionEvent(eventFactory, key, exception);
+      sendDeleteExceptionEvent(eventFactory, key, exception);
     }
   }
 
-  private void sendStartEvent(final InsertEventFactory eventFactory, final V value) {
+  private void sendInsertStartEvent(final InsertEventFactory eventFactory, final V value) {
     final Optional<Event> startEvent = eventFactory.startEvent(value);
     if (startEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(startEvent.get());
     }
   }
 
-  private void sendStartEvent(final InsertEventFactory[] eventFactories, final V value) {
+  private void sendInsertStartEvent(final InsertEventFactory[] eventFactories, final V value) {
+    sendInsertStartEvent(Lists.newArrayList(eventFactories), value);
+  }
+
+  private void sendInsertStartEvent(final Iterable<InsertEventFactory> eventFactories, final V value) {
     for (InsertEventFactory eventFactory : eventFactories) {
-      sendStartEvent(eventFactory, value);
+      sendInsertStartEvent(eventFactory, value);
     }
   }
 
-  private void sendStartEvent(final QueryEventFactory eventFactory, final K key) {
+  private void sendQueryStartEvent(final QueryEventFactory eventFactory, final K key) {
     final Optional<Event> startEvent = eventFactory.startEvent(key);
     if (startEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(startEvent.get());
     }
   }
 
-  private void sendStartEvent(final QueryEventFactory[] eventFactories, final K key) {
+  private void sendQueryStartEvent(final QueryEventFactory[] eventFactories, final K key) {
+    sendQueryStartEvent(Lists.newArrayList(eventFactories), key);
+  }
+
+  private void sendQueryStartEvent(final Iterable<QueryEventFactory> eventFactories, final K key) {
     for (QueryEventFactory eventFactory : eventFactories) {
-      sendStartEvent(eventFactory, key);
+      sendQueryStartEvent(eventFactory, key);
     }
   }
 
-  private void sendStartEvent(final UpdateEventFactory eventFactory, final K key, final V value) {
+  private void sendUpdateStartEvent(final UpdateEventFactory eventFactory, final K key, final V value) {
     final Optional<Event> startEvent = eventFactory.startEvent(key, value);
     if (startEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(startEvent.get());
     }
   }
 
-  private void sendStartEvent(final UpdateEventFactory[] eventFactories, final K key, final V value) {
+  private void sendUpdateStartEvent(final UpdateEventFactory[] eventFactories, final K key, final V value) {
+    sendUpdateStartEvent(Lists.newArrayList(eventFactories), key, value);
+  }
+
+  private void sendUpdateStartEvent(final Iterable<UpdateEventFactory> eventFactories, final K key, final V value) {
     for (UpdateEventFactory eventFactory : eventFactories) {
-      sendStartEvent(eventFactory, key, value);
+      sendUpdateStartEvent(eventFactory, key, value);
     }
   }
 
-  private void sendStartEvent(final DeleteEventFactory eventFactory, final K key) {
+  private void sendDeleteStartEvent(final DeleteEventFactory eventFactory, final K key) {
     final Optional<Event> startEvent = eventFactory.startEvent(key);
     if (startEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(startEvent.get());
     }
   }
 
-  private void sendStartEvent(final DeleteEventFactory[] eventFactories, final K key) {
+  private void sendDeleteStartEvent(final DeleteEventFactory[] eventFactories, final K key) {
+    sendDeleteStartEvent(Lists.newArrayList(eventFactories), key);
+  }
+
+  private void sendDeleteStartEvent(final Iterable<DeleteEventFactory> eventFactories, final K key) {
     for (DeleteEventFactory eventFactory : eventFactories) {
-      sendStartEvent(eventFactory, key);
+      sendDeleteStartEvent(eventFactory, key);
     }
   }
 

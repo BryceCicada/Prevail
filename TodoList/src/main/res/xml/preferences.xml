@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+            android:title="@string/settings">
+
+        <SwitchPreference
+                android:key="Use Loaders"
+                android:title="@string/preference_use_loaders"
+                android:summary="@string/preference_use_loaders_summary"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

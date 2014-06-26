@@ -1,6 +1,6 @@
 package org.bailedout.prevail.event;
 
-public class InsertExceptionEvent<V> implements InsertEvent, ExceptionEvent {
+public class InsertExceptionEvent<V> implements InsertEvent, DataChangeExceptionEvent {
   private final V mValue;
   private final Exception mExeption;
 

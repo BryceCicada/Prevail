@@ -1,6 +1,6 @@
 package org.bailedout.prevail.event;
 
-public class UpdateEndEvent<K, V> implements UpdateEvent, EndEvent {
+public class UpdateEndEvent<K, V> implements UpdateEvent, DataChangeEndEvent {
   private final K mKey;
   private final V mValue;
   private final int mNumValuesUpdated;

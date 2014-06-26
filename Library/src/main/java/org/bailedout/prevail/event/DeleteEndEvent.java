@@ -1,7 +1,7 @@
 package org.bailedout.prevail.event;
 
 
-public class DeleteEndEvent<K> implements DeleteEvent, EndEvent {
+public class DeleteEndEvent<K> implements DeleteEvent, DataChangeEndEvent {
   private final K mKey;
   private final int mNumValuesDeleted;
 
