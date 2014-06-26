@@ -2,15 +2,15 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="org.bailedout.prevail.android.example.ui.activity.PrevailActivity"
+                tools:context="ninja.android.prevail.example.ui.activity.PrevailActivity"
                 tools:ignore="MergeRootFrame">
 
-    <fragment android:name="org.bailedout.prevail.android.example.ui.fragment.SettingsFragment"
+    <fragment android:name="ninja.android.prevail.example.ui.fragment.SettingsFragment"
               android:layout_width="match_parent" android:layout_height="wrap_content"
               android:layout_alignParentTop="true"
               android:id="@+id/settings"/>
 
-    <fragment android:name="org.bailedout.prevail.android.example.ui.fragment.TodoListFragment"
+    <fragment android:name="ninja.android.prevail.example.ui.fragment.TodoListFragment"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
               android:layout_below="@+id/settings"
               android:id="@+id/todo"/>

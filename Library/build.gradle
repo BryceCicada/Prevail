@@ -12,7 +12,7 @@ buildscript {
 }
 
 pitest {
-    targetClasses = ['org.bailedout.prevail.*']
+    targetClasses = ['ninja.android.prevail.*']
     threads = 4
     enableDefaultIncrementalAnalysis = true
     outputFormats = ['XML', 'HTML']
