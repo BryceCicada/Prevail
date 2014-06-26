@@ -2,9 +2,7 @@
 <resources>
 
     <string name="app_name">Prevail</string>
-    <string name="hello_world">Hello world!</string>
     <string name="add">Add</string>
-    <string name="refresh">Refresh</string>
     <string name="do_what">Do What?</string>
     <string name="loader">Loader</string>
     <string name="action_about">About</string>

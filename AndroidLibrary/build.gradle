@@ -16,7 +16,7 @@ android {
     compileSdkVersion 19
     buildToolsVersion '19.1.0'
     defaultConfig {
-        applicationId 'org.bailedout.prevail.android'
+        applicationId 'ninja.ugly.prevail'
         minSdkVersion 17
         targetSdkVersion 19
         versionCode 1
