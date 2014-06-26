@@ -9,10 +9,17 @@ import java.util.Iterator;
 
 public interface QueryResult<V> extends Iterable<V>, Closeable {
 
+  boolean isClosed();
+
   public static class EmptyQueryResult<V> implements QueryResult<V> {
     @Override
     public void close() throws IOException {
       // Do nothing.
+    }
+
+    @Override
+    public boolean isClosed() {
+      return false;
     }
 
     @Override
@@ -21,16 +28,11 @@ public interface QueryResult<V> extends Iterable<V>, Closeable {
     }
   }
 
-  public static class SingletonQueryResult<T> implements QueryResult<T> {
+  public static class SingletonQueryResult<T> extends EmptyQueryResult<T> {
     private T mT;
 
     public SingletonQueryResult(final T t) {
       mT = t;
-    }
-
-    @Override
-    public void close() throws IOException {
-      // Do nothing
     }
 
     @Override
