@@ -35,7 +35,7 @@ public class TodoListWithLoaderController extends TodoListController implements 
   @Override
   public Loader<QueryResult<TodoItem>> onCreateLoader(final int id, final Bundle args) {
     DataModel dataModel = getDataModelService().getDataModel();
-    ChunkLoader<String, TodoItem> loader = new ChunkLoader<String, TodoItem>(mContext, dataModel, "database", "*") {
+    ChunkLoader<String, TodoItem> loader = new ChunkLoader<String, TodoItem>(mContext, dataModel, "*") {
       @Subscribe
       public void dataChangeEnd(DataChangeEvent event) {
         onContentChanged();

@@ -5,8 +5,9 @@ import android.content.Context;
 import android.os.CancellationSignal;
 import android.os.OperationCanceledException;
 import android.util.Log;
-import ninja.ugly.prevail.datamodel.DataModel;
+import com.google.common.base.Optional;
 import ninja.ugly.prevail.chunk.QueryResult;
+import ninja.ugly.prevail.datamodel.DataModel;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -18,7 +19,7 @@ public abstract class ChunkLoader<K, V> extends AsyncTaskLoader<QueryResult<V>> 
 
   private static final String TAG = ChunkLoader.class.getSimpleName();
 
-  private final String mChunkId;
+  private final Optional<String> mChunkId;
 
   K mKey;
   QueryResult<V> mResults;
@@ -29,7 +30,11 @@ public abstract class ChunkLoader<K, V> extends AsyncTaskLoader<QueryResult<V>> 
     super(context);
     mDataModel = dataModel;
     mKey = key;
-    mChunkId = chunkId;
+    mChunkId = chunkId == null ? Optional.<String>absent() : Optional.of(chunkId);
+  }
+
+  public ChunkLoader(final Context context, final DataModel dataModel, final K key) {
+    this(context, dataModel, null, key);
   }
 
   @Override
@@ -45,7 +50,11 @@ public abstract class ChunkLoader<K, V> extends AsyncTaskLoader<QueryResult<V>> 
     List<QueryResult<Object>> queryResults = null;
 
     try {
-      queryResults = mDataModel.query(mChunkId, mKey).get();
+      if (mChunkId.isPresent()) {
+        queryResults = mDataModel.query(mChunkId.get(), mKey).get();
+      } else {
+        queryResults = mDataModel.query(mKey).get();
+      }
     } catch (InterruptedException e) {
       Log.e(TAG, "Exception querying " + mKey, e);
     } catch (ExecutionException e) {

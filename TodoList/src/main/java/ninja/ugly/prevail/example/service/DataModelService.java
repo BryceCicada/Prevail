@@ -19,8 +19,6 @@ import ninja.ugly.prevail.example.event.dispatcher.ExecutorEventDispatcher;
 
 public class DataModelService extends Service {
 
-  private static final String TAG = DataModelService.class.getSimpleName();
-
   final EventDispatcher mEventDispatcher;
   final DataModel mDataModel;
 
@@ -58,7 +56,7 @@ public class DataModelService extends Service {
     chunk.addEventFactory(new DatabaseInsertEventFactory<String, TodoItem>());
 
     // Register the Chunk on the DataModel.
-    mDataModel.addChunk("database", chunk);
+    mDataModel.addChunk(chunk);
   }
 
   public EventDispatcher getEventDispatcher() {
@@ -71,19 +69,19 @@ public class DataModelService extends Service {
   }
 
   public void query(final String queryString) {
-    mDataModel.query("database", queryString);
+    mDataModel.query(queryString);
   }
 
   public void insert(final TodoItem item) {
-    mDataModel.insert("database", item);
+    mDataModel.insert(item);
   }
 
   public void delete(final TodoItem item) {
-    mDataModel.delete("database", Long.toString(item.getId()));
+    mDataModel.delete(Long.toString(item.getId()));
   }
 
   public void update(final TodoItem item) {
-    mDataModel.update("database", Long.toString(item.getId()), item);
+    mDataModel.update(Long.toString(item.getId()), item);
   }
 
   public class DataModelServiceBinder extends Binder {

@@ -10,8 +10,6 @@ import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 
 class DatabaseHelper extends SQLiteOpenHelper {
 
-  private static final String TAG = DatabaseHelper.class.getSimpleName();
-
   public static final String DATABASE_NAME = "database.sqlite";
   private static final int DATABASE_VERSION = 1;
 
