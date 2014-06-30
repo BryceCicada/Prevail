@@ -41,41 +41,41 @@ public class DataModelTest {
 
   @Test(expected = NullPointerException.class)
   public void testCannotAddNullChunk() {
-    mDataModel.addChunk("chunkId", null);
+    mDataModel.addChunk("segment", null);
   }
 
   @Test
-  public void testDeleteByChunkIdDelegatesToAddedChunkWithChunkId() throws DeleteException, TimeoutException, InterruptedException, ExecutionException {
-    mDataModel.addChunk("chunkId", mChunk);
-    mDataModel.delete("chunkId", mKey).get(1, TimeUnit.SECONDS);
+  public void testDeleteBySegmentDelegatesToAddedChunkWithSegment() throws DeleteException, TimeoutException, InterruptedException, ExecutionException {
+    mDataModel.addChunk("segment", mChunk);
+    mDataModel.delete("segment", mKey).get(1, TimeUnit.SECONDS);
     verify(mChunk).delete(argThat(is(mKey)), Mockito.<DeleteEventFactory>anyVararg());
   }
 
   @Test
-  public void testDeleteByChunkIdDelegatesToAllChunksAddedWithChunkId() throws DeleteException, TimeoutException, InterruptedException, ExecutionException {
+  public void testDeleteBySegmentDelegatesToAllChunksAddedWithSegment() throws DeleteException, TimeoutException, InterruptedException, ExecutionException {
     Chunk chunk1 = mock(Chunk.class);
     Chunk chunk2 = mock(Chunk.class);
-    mDataModel.addChunk("chunkId", chunk1);
-    mDataModel.addChunk("chunkId", chunk2);
-    mDataModel.delete("chunkId", mKey).get(1, TimeUnit.SECONDS);
+    mDataModel.addChunk("segment", chunk1);
+    mDataModel.addChunk("segment", chunk2);
+    mDataModel.delete("segment", mKey).get(1, TimeUnit.SECONDS);
     verify(chunk1).delete(argThat(is(mKey)), Mockito.<DeleteEventFactory>anyVararg());
     verify(chunk2).delete(argThat(is(mKey)), Mockito.<DeleteEventFactory>anyVararg());
   }
 
   @Test
-  public void testDeleteByChunkIdWithChunkIdNotAddedToDataModelReturnsEmptyFuture() throws DeleteException, TimeoutException, InterruptedException, ExecutionException {
-    List<Integer> integers = mDataModel.delete("some chunkId not in data model", mKey).get(1, TimeUnit.SECONDS);
+  public void testDeleteBySegmentWithSegmentNotAddedToDataModelReturnsEmptyFuture() throws DeleteException, TimeoutException, InterruptedException, ExecutionException {
+    List<Integer> integers = mDataModel.delete("some segment not in data model", mKey).get(1, TimeUnit.SECONDS);
     assertThat(integers, hasSize(0));
   }
 
   @Test
-  public void testDeleteByChunkIdWithEventFactoryDelegatesToAddedChunk() throws DeleteException, TimeoutException, InterruptedException, ExecutionException {
+  public void testDeleteBySegmentWithEventFactoryDelegatesToAddedChunk() throws DeleteException, TimeoutException, InterruptedException, ExecutionException {
     DeleteEventFactory eventFactory = mock(DeleteEventFactory.class);
     when(eventFactory.startEvent(argThat(is(mKey)))).thenReturn(Optional.<Event>absent());
     when(eventFactory.endEvent(argThat(is(mKey)), anyInt())).thenReturn(Optional.<Event>absent());
 
-    mDataModel.addChunk("chunkId", mChunk);
-    mDataModel.delete("chunkId", mKey, eventFactory).get(1, TimeUnit.SECONDS);
+    mDataModel.addChunk("segment", mChunk);
+    mDataModel.delete("segment", mKey, eventFactory).get(1, TimeUnit.SECONDS);
     verify(mChunk).delete(argThat(is(mKey)), Mockito.<DeleteEventFactory>anyVararg());
   }
 
@@ -139,37 +139,37 @@ public class DataModelTest {
   }
 
   @Test
-  public void testInsertByChunkIdDelegatesToAddedChunkWithChunkId() throws InsertException, TimeoutException, InterruptedException, ExecutionException {
-    mDataModel.addChunk("chunkId", mChunk);
-    mDataModel.insert("chunkId", mValue).get(1, TimeUnit.SECONDS);
+  public void testInsertBySegmentDelegatesToAddedChunkWithSegment() throws InsertException, TimeoutException, InterruptedException, ExecutionException {
+    mDataModel.addChunk("segment", mChunk);
+    mDataModel.insert("segment", mValue).get(1, TimeUnit.SECONDS);
     verify(mChunk).insert(argThat(is(mValue)), Mockito.<InsertEventFactory>anyVararg());
   }
 
   @Test
-  public void testInsertByChunkIdDelegatesToAllChunksAddedWithChunkId() throws InsertException, TimeoutException, InterruptedException, ExecutionException {
+  public void testInsertBySegmentDelegatesToAllChunksAddedWithSegment() throws InsertException, TimeoutException, InterruptedException, ExecutionException {
     Chunk chunk1 = mock(Chunk.class);
     Chunk chunk2 = mock(Chunk.class);
-    mDataModel.addChunk("chunkId", chunk1);
-    mDataModel.addChunk("chunkId", chunk2);
-    mDataModel.insert("chunkId", mValue).get(1, TimeUnit.SECONDS);
+    mDataModel.addChunk("segment", chunk1);
+    mDataModel.addChunk("segment", chunk2);
+    mDataModel.insert("segment", mValue).get(1, TimeUnit.SECONDS);
     verify(chunk1).insert(argThat(is(mValue)), Mockito.<InsertEventFactory>anyVararg());
     verify(chunk2).insert(argThat(is(mValue)), Mockito.<InsertEventFactory>anyVararg());
   }
 
   @Test
-  public void testInsertByChunkIdWithChunkIdNotAddedToDataModelReturnsEmptyFuture() throws InsertException, TimeoutException, InterruptedException, ExecutionException {
-    List<Object> keys = mDataModel.insert("some chunkId not in data model", mValue).get(1, TimeUnit.SECONDS);
+  public void testInsertBySegmentWithSegmentNotAddedToDataModelReturnsEmptyFuture() throws InsertException, TimeoutException, InterruptedException, ExecutionException {
+    List<Object> keys = mDataModel.insert("some segment not in data model", mValue).get(1, TimeUnit.SECONDS);
     assertThat(keys, hasSize(0));
   }
 
   @Test
-  public void testInsertByChunkIdWithEventFactoryDelegatesToAddedChunk() throws InsertException, TimeoutException, InterruptedException, ExecutionException {
+  public void testInsertBySegmentWithEventFactoryDelegatesToAddedChunk() throws InsertException, TimeoutException, InterruptedException, ExecutionException {
     InsertEventFactory<Key, Value> eventFactory = mock(InsertEventFactory.class);
     when(eventFactory.startEvent(argThat(is(mValue)))).thenReturn(Optional.<Event>absent());
     when(eventFactory.endEvent(argThat(any(Key.class)), argThat(is(mValue)))).thenReturn(Optional.<Event>absent());
 
-    mDataModel.addChunk("chunkId", mChunk);
-    mDataModel.insert("chunkId", mValue, eventFactory).get(1, TimeUnit.SECONDS);
+    mDataModel.addChunk("segment", mChunk);
+    mDataModel.insert("segment", mValue, eventFactory).get(1, TimeUnit.SECONDS);
     verify(mChunk).insert(argThat(is(mValue)), Mockito.<InsertEventFactory>anyVararg());
   }
 
@@ -233,53 +233,53 @@ public class DataModelTest {
   }
 
   @Test
-  public void testQueryByChunkIdDelegatesToAddedChunkWithChunkId() throws QueryException, InterruptedException, TimeoutException, ExecutionException {
-    mDataModel.addChunk("chunkId", mChunk);
-    mDataModel.query("chunkId", mKey).get(1, TimeUnit.SECONDS);
+  public void testQueryBySegmentDelegatesToAddedChunkWithSegment() throws QueryException, InterruptedException, TimeoutException, ExecutionException {
+    mDataModel.addChunk("segment", mChunk);
+    mDataModel.query("segment", mKey).get(1, TimeUnit.SECONDS);
     verify(mChunk).query(argThat(is(mKey)), Mockito.<QueryEventFactory>anyVararg());
   }
 
   @Test
-  public void testQueryByChunkIdDelegatesToAddedFirstAddedChunkWithChunkIdWhenMultipleChunksAreAdded() throws QueryException, InterruptedException, TimeoutException, ExecutionException {
-    mDataModel.addChunk("chunkId1", mChunk);
-    mDataModel.addChunk("chunkId2", mock(Chunk.class));
-    mDataModel.query("chunkId1", mKey).get(1, TimeUnit.SECONDS);
+  public void testQueryBySegmentDelegatesToAddedFirstAddedChunkWithSegmentWhenMultipleChunksAreAdded() throws QueryException, InterruptedException, TimeoutException, ExecutionException {
+    mDataModel.addChunk("segment1", mChunk);
+    mDataModel.addChunk("segment2", mock(Chunk.class));
+    mDataModel.query("segment1", mKey).get(1, TimeUnit.SECONDS);
     verify(mChunk).query(argThat(is(mKey)), Mockito.<QueryEventFactory>anyVararg());
   }
 
   @Test
-  public void testQueryByChunkIdDelegatesToAddedSecondAddedChunkWithChunkIdWhenMultipleChunksAreAdded() throws QueryException, InterruptedException, TimeoutException, ExecutionException {
-    mDataModel.addChunk("chunkId1", mock(Chunk.class));
-    mDataModel.addChunk("chunkId2", mChunk);
-    mDataModel.query("chunkId2", mKey).get(1, TimeUnit.SECONDS);
+  public void testQueryBySegmentDelegatesToAddedSecondAddedChunkWithSegmentWhenMultipleChunksAreAdded() throws QueryException, InterruptedException, TimeoutException, ExecutionException {
+    mDataModel.addChunk("segment1", mock(Chunk.class));
+    mDataModel.addChunk("segment2", mChunk);
+    mDataModel.query("segment2", mKey).get(1, TimeUnit.SECONDS);
     verify(mChunk).query(argThat(is(mKey)), Mockito.<QueryEventFactory>anyVararg());
   }
 
   @Test
-  public void testQueryByChunkIdDelegatesToAllChunksAddedWithChunkId() throws QueryException, InterruptedException, TimeoutException, ExecutionException {
+  public void testQueryBySegmentDelegatesToAllChunksAddedWithSegment() throws QueryException, InterruptedException, TimeoutException, ExecutionException {
     Chunk chunk1 = mock(Chunk.class);
     Chunk chunk2 = mock(Chunk.class);
-    mDataModel.addChunk("chunkId", chunk1);
-    mDataModel.addChunk("chunkId", chunk2);
-    mDataModel.query("chunkId", mKey).get(1, TimeUnit.SECONDS);
+    mDataModel.addChunk("segment", chunk1);
+    mDataModel.addChunk("segment", chunk2);
+    mDataModel.query("segment", mKey).get(1, TimeUnit.SECONDS);
     verify(chunk1).query(argThat(is(mKey)), Mockito.<QueryEventFactory>anyVararg());
     verify(chunk2).query(argThat(is(mKey)), Mockito.<QueryEventFactory>anyVararg());
   }
 
   @Test
-  public void testQueryByChunkIdWithChunkIdNotAddedToDataModelReturnsEmptyFuture() throws InterruptedException, TimeoutException, QueryException, ExecutionException {
-    List<QueryResult<Object>> queryResults = mDataModel.query("some chunkId not in data model", mKey).get(1, TimeUnit.SECONDS);
+  public void testQueryBySegmentWithSegmentNotAddedToDataModelReturnsEmptyFuture() throws InterruptedException, TimeoutException, QueryException, ExecutionException {
+    List<QueryResult<Object>> queryResults = mDataModel.query("some segment not in data model", mKey).get(1, TimeUnit.SECONDS);
     assertThat(queryResults, hasSize(0));
   }
 
   @Test
-  public void testQueryByChunkIdWithEventFactoryDelegatesToAddedChunk() throws QueryException, InterruptedException, TimeoutException, ExecutionException {
+  public void testQueryBySegmentWithEventFactoryDelegatesToAddedChunk() throws QueryException, InterruptedException, TimeoutException, ExecutionException {
     QueryEventFactory<Key, Value> eventFactory = mock(QueryEventFactory.class);
     when(eventFactory.startEvent(argThat(is(mKey)))).thenReturn(Optional.<Event>absent());
     when(eventFactory.endEvent(argThat(is(mKey)), argThat(any(Iterable.class)))).thenReturn(Optional.<Event>absent());
 
-    mDataModel.addChunk("chunkId", mChunk);
-    mDataModel.query("chunkId", mKey, eventFactory).get(1, TimeUnit.SECONDS);
+    mDataModel.addChunk("segment", mChunk);
+    mDataModel.query("segment", mKey, eventFactory).get(1, TimeUnit.SECONDS);
     verify(mChunk).query(argThat(is(mKey)), argThat(is(eventFactory)));
   }
 
@@ -344,37 +344,37 @@ public class DataModelTest {
   }
 
   @Test
-  public void testUpdateByChunkIdDelegatesToAddedChunkWithChunkId() throws UpdateException, TimeoutException, InterruptedException, ExecutionException {
-    mDataModel.addChunk("chunkId", mChunk);
-    mDataModel.update("chunkId", mKey, mValue).get(1, TimeUnit.SECONDS);
+  public void testUpdateBySegmentDelegatesToAddedChunkWithSegment() throws UpdateException, TimeoutException, InterruptedException, ExecutionException {
+    mDataModel.addChunk("segment", mChunk);
+    mDataModel.update("segment", mKey, mValue).get(1, TimeUnit.SECONDS);
     verify(mChunk).update(argThat(is(mKey)), argThat(is(mValue)), Mockito.<UpdateEventFactory>anyVararg());
   }
 
   @Test
-  public void testUpdateByChunkIdDelegatesToAllChunksAddedWithChunkId() throws UpdateException, TimeoutException, InterruptedException, ExecutionException {
+  public void testUpdateBySegmentDelegatesToAllChunksAddedWithSegment() throws UpdateException, TimeoutException, InterruptedException, ExecutionException {
     Chunk chunk1 = mock(Chunk.class);
     Chunk chunk2 = mock(Chunk.class);
-    mDataModel.addChunk("chunkId", chunk1);
-    mDataModel.addChunk("chunkId", chunk2);
-    mDataModel.update("chunkId", mKey, mValue).get(1, TimeUnit.SECONDS);
+    mDataModel.addChunk("segment", chunk1);
+    mDataModel.addChunk("segment", chunk2);
+    mDataModel.update("segment", mKey, mValue).get(1, TimeUnit.SECONDS);
     verify(chunk1).update(argThat(is(mKey)), argThat(is(mValue)), Mockito.<UpdateEventFactory>anyVararg());
     verify(chunk2).update(argThat(is(mKey)), argThat(is(mValue)), Mockito.<UpdateEventFactory>anyVararg());
   }
 
   @Test
-  public void testUpdateByChunkIdWithChunkIdNotAddedToDataModelReturnsEmptyFuture() throws UpdateException, TimeoutException, InterruptedException, ExecutionException {
-    List<Integer> integers = mDataModel.update("some chunkId not in data model", mKey, mValue).get(1, TimeUnit.SECONDS);
+  public void testUpdateBySegmentWithSegmentNotAddedToDataModelReturnsEmptyFuture() throws UpdateException, TimeoutException, InterruptedException, ExecutionException {
+    List<Integer> integers = mDataModel.update("some segment not in data model", mKey, mValue).get(1, TimeUnit.SECONDS);
     assertThat(integers, hasSize(0));
   }
 
   @Test
-  public void testUpdateByChunkIdWithEventFactoryDelegatesToAddedChunk() throws UpdateException, TimeoutException, InterruptedException, ExecutionException {
+  public void testUpdateBySegmentWithEventFactoryDelegatesToAddedChunk() throws UpdateException, TimeoutException, InterruptedException, ExecutionException {
     UpdateEventFactory eventFactory = mock(UpdateEventFactory.class);
     when(eventFactory.startEvent(argThat(is(mKey)), argThat(is(mValue)))).thenReturn(Optional.<Event>absent());
     when(eventFactory.endEvent(argThat(is(mKey)), argThat(is(mValue)), anyInt())).thenReturn(Optional.<Event>absent());
 
-    mDataModel.addChunk("chunkId", mChunk);
-    mDataModel.update("chunkId", mKey, mValue, eventFactory).get(1, TimeUnit.SECONDS);
+    mDataModel.addChunk("segment", mChunk);
+    mDataModel.update("segment", mKey, mValue, eventFactory).get(1, TimeUnit.SECONDS);
     verify(mChunk).update(argThat(is(mKey)), argThat(is(mValue)), Mockito.<UpdateEventFactory>anyVararg());
   }
 

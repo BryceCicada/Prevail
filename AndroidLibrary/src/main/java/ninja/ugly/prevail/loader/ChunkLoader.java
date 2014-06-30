@@ -19,18 +19,18 @@ public abstract class ChunkLoader<K, V> extends AsyncTaskLoader<QueryResult<V>> 
 
   private static final String TAG = ChunkLoader.class.getSimpleName();
 
-  private final Optional<String> mChunkId;
+  private final Optional<String> mSegment;
 
   K mKey;
   QueryResult<V> mResults;
   private DataModel mDataModel;
   private CancellationSignal mCancellationSignal;
 
-  public ChunkLoader(Context context, DataModel dataModel, String chunkId, K key) {
+  public ChunkLoader(Context context, DataModel dataModel, String segment, K key) {
     super(context);
     mDataModel = dataModel;
     mKey = key;
-    mChunkId = chunkId == null ? Optional.<String>absent() : Optional.of(chunkId);
+    mSegment = segment == null ? Optional.<String>absent() : Optional.of(segment);
   }
 
   public ChunkLoader(final Context context, final DataModel dataModel, final K key) {
@@ -50,8 +50,8 @@ public abstract class ChunkLoader<K, V> extends AsyncTaskLoader<QueryResult<V>> 
     List<QueryResult<Object>> queryResults = null;
 
     try {
-      if (mChunkId.isPresent()) {
-        queryResults = mDataModel.query(mChunkId.get(), mKey).get();
+      if (mSegment.isPresent()) {
+        queryResults = mDataModel.query(mSegment.get(), mKey).get();
       } else {
         queryResults = mDataModel.query(mKey).get();
       }
@@ -156,8 +156,8 @@ public abstract class ChunkLoader<K, V> extends AsyncTaskLoader<QueryResult<V>> 
     writer.print("mKey=");
     writer.println(mKey);
     writer.print(prefix);
-    writer.print("mChunkId=");
-    writer.println(mChunkId);
+    writer.print("mSegment=");
+    writer.println(mSegment);
     writer.print(prefix);
     writer.print("mResults=");
     writer.println(mResults);
