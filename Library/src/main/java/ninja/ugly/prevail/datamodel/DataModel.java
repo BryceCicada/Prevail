@@ -22,7 +22,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * An event driven data model giving access to registered 'chunks' of data.
  * <p>
  * A DataModel is a container of Chunks, optionally registered to different 'segments' of the DataModel.
- * Each Chunk defines its own CRUD operations on it's own classes.  Some Chunks might merely hold objects in
+ * Each Chunk defines its own CRUD operations on its own classes.  Some Chunks might merely hold objects in
  * memory, whilst others might persist objects via a network API or local database.  In all cases, the
  * Chunks present a consistent interface.  Chunks themselves are accessed synchronously, however when
  * registered on a DataModel they can be accessed asynchronously.  Chunks are registered on the DataModel
