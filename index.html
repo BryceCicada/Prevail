@@ -30,37 +30,40 @@
 
       </header>
       <section>
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+        <p>Prevail is an abstraction layer for your application data.</p>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<p>It is not an ORM framework, a persistence layer, a networking library or anything complicated.</p>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p>It simply allows your applications to abstract away the sources of its data. By using Prevail, access to your data becomes asynchronous and event driven. Importantly, the sources of data are decoupled from the logic of your application.</p>
 
 <h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<a name="motivations" class="anchor" href="#motivations"><span class="octicon octicon-link"></span></a>Motivations</h3>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<p>Prevail is motivated by the following points:</p>
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+<ol>
+<li>The majority of code in an application cares little about the source of the data on which it operates.
+Data should be event driven. When stuff changes, you want to know about it. It's not enough to just query an object. We want to know when that object becomes invalid.</li>
+<li>Sources of data should be easily changed, without disrupting lots of code. It should be easy to swap a network resource for a hashtable during testing. Sure, that could be achieved by setting up fake test objects, but why bother when it should be easy to swap in new data sources quickly in the first place. Such decoupled code is easier to change in the future too.</li>
+<li>It should be easy to perform data operations on multiple data sources at once. A local cache query might return quickly, whilst a network query may take longer. However, it should be possible for client code to be completely unaware that there are multiple sources of data. It should be possible for a client merely to handle the data as it arrives.</li>
+</ol><p>In particular, on Android:</p>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<ol>
+<li>Many people use ContentProviders for data simply because they give easy access to useful asynchronous functionality. This can easily contaminate your application with Cursors, Uris, ContentObservers and CursorLoaders. It's frustrating to have code that depends on these classes, when they should really never penetrate into the applications domain. It's much nicer to have all the good stuff, like asynchronous loading and notification of change, within your own classes in your own domain.</li>
+<li>What happens when you realise that all the stuff you've been persisting to SharedPreferences needs to be in a database so that you can access it with a richer query language? In that case, client code shouldn't have to change, only the means of data access needs to change.
+Examples:</li>
+</ol><h3>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h3>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<p>There are two example applications within the sources:</p>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<ol>
+<li> A simple java application that merely queries a single item from a DataModel.</li>
+<li> An Android app that implements a little 'To Do' list of items.  The items are displayed in a ListView that can be managed with or without a Loader.</li>
+</ol><h3>
+<a name="roadmap" class="anchor" href="#roadmap"><span class="octicon octicon-link"></span></a>Roadmap:</h3>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>Javadoc</p>
       </section>
       <footer>
         <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
