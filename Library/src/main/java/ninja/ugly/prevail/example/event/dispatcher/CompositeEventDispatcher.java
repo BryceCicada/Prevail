@@ -3,10 +3,20 @@ package ninja.ugly.prevail.example.event.dispatcher;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class CompoundEventDispatcher implements EventDispatcher {
+/**
+ * A composite class of multiple EventDispatchers.
+ * <p>
+ * Chunks only dispatch to a single EventDispatcher, whilst this is likely to cover
+ * most simple use cases, there may be occasions when multiple EventDispatchers are required.
+ * In such cases, those EventDispatchers can be added to this composite.
+ */
+public class CompositeEventDispatcher implements EventDispatcher {
 
   private Collection<EventDispatcher> mEventDispatchers = new ArrayList<EventDispatcher>();
 
+  /**
+   * Add an EventDispatcher to this composite.
+   */
   public void addEventDispatcher(EventDispatcher eventDispatcher) {
     mEventDispatchers.add(eventDispatcher);
   }

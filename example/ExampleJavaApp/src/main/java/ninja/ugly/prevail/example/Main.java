@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ninja.ugly.prevail.chunk.Chunk;
 import ninja.ugly.prevail.chunk.HashMapChunk;
+import ninja.ugly.prevail.chunk.QueryResult;
 import ninja.ugly.prevail.datamodel.DataModel;
 import ninja.ugly.prevail.example.event.Event;
 import ninja.ugly.prevail.example.event.QueryEndEvent;
@@ -79,7 +80,7 @@ public class Main {
     }
 
     @Override
-    public <E extends Event> Optional<E> endEvent(final Integer key, final Iterable<String> value) {
+    public <E extends Event> Optional<E> endEvent(final Integer key, final QueryResult<String> value) {
       return (Optional<E>) Optional.of(new QueryEndEvent<Integer, String>(key, value));
     }
   }

@@ -276,7 +276,7 @@ public class DataModelTest {
   public void testQueryBySegmentWithEventFactoryDelegatesToAddedChunk() throws QueryException, InterruptedException, TimeoutException, ExecutionException {
     QueryEventFactory<Key, Value> eventFactory = mock(QueryEventFactory.class);
     when(eventFactory.startEvent(argThat(is(mKey)))).thenReturn(Optional.<Event>absent());
-    when(eventFactory.endEvent(argThat(is(mKey)), argThat(any(Iterable.class)))).thenReturn(Optional.<Event>absent());
+    when(eventFactory.endEvent(argThat(is(mKey)), argThat(any(QueryResult.class)))).thenReturn(Optional.<Event>absent());
 
     mDataModel.addChunk("segment", mChunk);
     mDataModel.query("segment", mKey, eventFactory).get(1, TimeUnit.SECONDS);

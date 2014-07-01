@@ -8,6 +8,9 @@ import ninja.ugly.prevail.exception.UpdateException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A simple extension of DefaultChunk that stores data in memory.
+ */
 public class HashMapChunk<K, V> extends DefaultChunk<K, V> {
 
   private Map<K, V> mMap = new HashMap<K, V>();
@@ -60,9 +63,15 @@ public class HashMapChunk<K, V> extends DefaultChunk<K, V> {
     return mMap.toString();
   }
 
+  /**
+   * A factory class for producing keys from values.
+   */
   public static interface KeyFactory<K, V> {
     K createKey(V value);
 
+    /**
+     * A simple implementation of KeyFactory that simply returns the object's hashcode as an Integer key.
+     */
     public static class HashCodeKeyFactory<V> implements KeyFactory<Integer, V> {
       @Override
       public Integer createKey(final V value) {

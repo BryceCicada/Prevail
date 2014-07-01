@@ -18,6 +18,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * A default implementation of the Chunk interface that implements dispatching events.
+ * @param <K> The type of keys on this Chunk
+ * @param <V> The type of values on this Chunk
+ */
 public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
 
   private List<InsertEventFactory> mInsertEventFactories = new CopyOnWriteArrayList<InsertEventFactory>();
@@ -217,18 +222,18 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
     }
   }
 
-  private void sendQueryEndEvent(final QueryEventFactory eventFactory, final K key, final Iterable<V> values) {
+  private void sendQueryEndEvent(final QueryEventFactory eventFactory, final K key, final QueryResult<V> values) {
     final Optional<Event> endEvent = eventFactory.endEvent(key, values);
     if (endEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(endEvent.get());
     }
   }
 
-  private void sendQueryEndEvent(final QueryEventFactory[] eventFactories, final K key, final Iterable<V> value) {
+  private void sendQueryEndEvent(final QueryEventFactory[] eventFactories, final K key, final QueryResult<V> value) {
     sendQueryEndEvent(Lists.newArrayList(eventFactories), key, value);
   }
 
-  private void sendQueryEndEvent(final Iterable<QueryEventFactory> eventFactories, final K key, final Iterable<V> value) {
+  private void sendQueryEndEvent(final Iterable<QueryEventFactory> eventFactories, final K key, final QueryResult<V> value) {
     for (QueryEventFactory eventFactory : eventFactories) {
       sendQueryEndEvent(eventFactory, key, value);
     }
