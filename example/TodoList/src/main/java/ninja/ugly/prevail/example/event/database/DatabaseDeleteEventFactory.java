@@ -1,6 +1,7 @@
 package ninja.ugly.prevail.example.event.database;
 
 import com.google.common.base.Optional;
+
 import ninja.ugly.prevail.event.DeleteEndEvent;
 import ninja.ugly.prevail.event.Event;
 

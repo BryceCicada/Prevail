@@ -2,6 +2,12 @@ package ninja.ugly.prevail.chunk;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.EventBus;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.concurrent.Executor;
+
 import ninja.ugly.prevail.Key;
 import ninja.ugly.prevail.KeyValueChunk;
 import ninja.ugly.prevail.Value;
@@ -17,14 +23,15 @@ import ninja.ugly.prevail.exception.DeleteException;
 import ninja.ugly.prevail.exception.InsertException;
 import ninja.ugly.prevail.exception.QueryException;
 import ninja.ugly.prevail.exception.UpdateException;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.concurrent.Executor;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.intThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DefaultChunkTest {
 

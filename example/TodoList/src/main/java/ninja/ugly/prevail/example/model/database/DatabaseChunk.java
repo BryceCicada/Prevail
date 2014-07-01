@@ -2,20 +2,21 @@ package ninja.ugly.prevail.example.model.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import nl.qbusict.cupboard.QueryResultIterable;
-import ninja.ugly.prevail.example.model.domain.TodoItem;
-import ninja.ugly.prevail.chunk.DefaultChunk;
-import ninja.ugly.prevail.chunk.QueryResult;
-import ninja.ugly.prevail.exception.DeleteException;
-import ninja.ugly.prevail.exception.InsertException;
-import ninja.ugly.prevail.exception.QueryException;
-import ninja.ugly.prevail.exception.UpdateException;
 
 import java.io.IOException;
 import java.util.Iterator;
 
-import static nl.qbusict.cupboard.CupboardFactory.cupboard;
+import ninja.ugly.prevail.chunk.DefaultChunk;
+import ninja.ugly.prevail.chunk.QueryResult;
+import ninja.ugly.prevail.example.model.domain.TodoItem;
+import ninja.ugly.prevail.exception.DeleteException;
+import ninja.ugly.prevail.exception.InsertException;
+import ninja.ugly.prevail.exception.QueryException;
+import ninja.ugly.prevail.exception.UpdateException;
+import nl.qbusict.cupboard.QueryResultIterable;
+
 import static ninja.ugly.prevail.chunk.QueryResult.EmptyQueryResult;
+import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 
 /**
  * A chunk to contain the TodoItems in a database table.

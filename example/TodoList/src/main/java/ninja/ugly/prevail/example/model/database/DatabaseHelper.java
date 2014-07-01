@@ -3,6 +3,7 @@ package ninja.ugly.prevail.example.model.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import ninja.ugly.prevail.example.model.domain.TodoItem;
 
 import static com.google.common.base.Preconditions.checkNotNull;

@@ -4,18 +4,20 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+
 import com.google.common.eventbus.EventBus;
-import ninja.ugly.prevail.executor.MainThreadExecutor;
-import ninja.ugly.prevail.example.model.domain.TodoItem;
-import ninja.ugly.prevail.example.event.database.DatabaseDeleteEventFactory;
-import ninja.ugly.prevail.example.event.database.DatabaseInsertEventFactory;
-import ninja.ugly.prevail.example.event.database.DatabaseQueryEventFactory;
-import ninja.ugly.prevail.example.model.database.DatabaseChunk;
+
 import ninja.ugly.prevail.chunk.Chunk;
 import ninja.ugly.prevail.datamodel.DataModel;
 import ninja.ugly.prevail.event.dispatcher.EventBusEventDispatcher;
 import ninja.ugly.prevail.event.dispatcher.EventDispatcher;
 import ninja.ugly.prevail.event.dispatcher.ExecutorEventDispatcher;
+import ninja.ugly.prevail.example.event.database.DatabaseDeleteEventFactory;
+import ninja.ugly.prevail.example.event.database.DatabaseInsertEventFactory;
+import ninja.ugly.prevail.example.event.database.DatabaseQueryEventFactory;
+import ninja.ugly.prevail.example.model.database.DatabaseChunk;
+import ninja.ugly.prevail.example.model.domain.TodoItem;
+import ninja.ugly.prevail.executor.MainThreadExecutor;
 
 public class DataModelService extends Service {
 

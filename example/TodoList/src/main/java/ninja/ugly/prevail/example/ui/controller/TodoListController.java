@@ -3,12 +3,13 @@ package ninja.ugly.prevail.example.ui.controller;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ListView;
-import ninja.ugly.prevail.example.ui.adapter.TodoListAdapter;
-import ninja.ugly.prevail.example.R;
-import ninja.ugly.prevail.example.model.domain.TodoItem;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ninja.ugly.prevail.example.R;
+import ninja.ugly.prevail.example.model.domain.TodoItem;
+import ninja.ugly.prevail.example.ui.adapter.TodoListAdapter;
 
 public abstract class TodoListController extends DataModelSubscriberController implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 

@@ -1,23 +1,35 @@
 package ninja.ugly.prevail.chunk;
 
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
+import com.google.common.collect.Maps;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
 import ninja.ugly.prevail.exception.DeleteException;
 import ninja.ugly.prevail.exception.InsertException;
 import ninja.ugly.prevail.exception.QueryException;
 import ninja.ugly.prevail.exception.UpdateException;
 
-import java.util.HashMap;
-import java.util.Map;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A simple extension of DefaultChunk that stores data in memory.
  */
 public class HashMapChunk<K, V> extends DefaultChunk<K, V> {
 
-  private Map<K, V> mMap = new HashMap<K, V>();
-  private KeyFactory<K, V> mKeyFactory;
+  private final Map<K, V> mMap;
+  private final KeyFactory<K, V> mKeyFactory;
 
   public HashMapChunk(KeyFactory<K, V> keyFactory) {
-    mKeyFactory = keyFactory;
+    this(Maps.<K,V>newHashMap(), keyFactory);
+  }
+
+  public HashMapChunk(Map<K, V> map, KeyFactory<K, V> keyFactory) {
+    mMap = checkNotNull(map);
+    mKeyFactory = checkNotNull(keyFactory);
   }
 
   @Override
@@ -63,19 +75,53 @@ public class HashMapChunk<K, V> extends DefaultChunk<K, V> {
     return mMap.toString();
   }
 
+  protected Collection<V> getValues() {
+    return Collections.unmodifiableCollection(mMap.values());
+  }
+
   /**
    * A factory class for producing keys from values.
    */
   public static interface KeyFactory<K, V> {
     K createKey(V value);
 
-    /**
-     * A simple implementation of KeyFactory that simply returns the object's hashcode as an Integer key.
-     */
-    public static class HashCodeKeyFactory<V> implements KeyFactory<Integer, V> {
+    public static class DefaultKeyFactory<K, V> implements KeyFactory<K, V> {
+      private Function<V, K> mFunction;
+
+      DefaultKeyFactory(Function<V, K> function) {
+        mFunction = function;
+      }
+
       @Override
-      public Integer createKey(final V value) {
-        return value.hashCode();
+      public K createKey(V value) {
+        return mFunction.apply(value);
+      }
+    }
+
+    /**
+     * An implementation of KeyFactory that returns an auto-incrementing Integer as a key.
+     */
+    public static class AutoIncrementingIntegerKeyFactory<V> extends DefaultKeyFactory<Integer, V> {
+      AutoIncrementingIntegerKeyFactory() {
+        super(new AutoIncrementFunction<V>());
+      }
+    }
+
+    /**
+     * An implementation of KeyFactory that returns an auto-incrementing String as a key.
+     */
+    public static class AutoIncrementingStringKeyFactory<V> extends DefaultKeyFactory<String, V> {
+      public AutoIncrementingStringKeyFactory() {
+        super(Functions.compose(Functions.toStringFunction(), new AutoIncrementFunction<V>()));
+      }
+    }
+
+    static class AutoIncrementFunction<V> implements Function<V, Integer> {
+      private int mCounter = 0;
+
+      @Override
+      public Integer apply(V input) {
+        return mCounter++;
       }
     }
   }

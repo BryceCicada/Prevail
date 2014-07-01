@@ -6,15 +6,17 @@ import android.content.Loader;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
 import com.google.common.collect.Iterables;
 import com.google.common.eventbus.Subscribe;
-import ninja.ugly.prevail.loader.ChunkLoader;
-import ninja.ugly.prevail.example.model.domain.TodoItem;
+
+import java.util.Arrays;
+
 import ninja.ugly.prevail.chunk.QueryResult;
 import ninja.ugly.prevail.datamodel.DataModel;
 import ninja.ugly.prevail.event.DataChangeEvent;
-
-import java.util.Arrays;
+import ninja.ugly.prevail.example.model.domain.TodoItem;
+import ninja.ugly.prevail.loader.ChunkLoader;
 
 public class TodoListWithLoaderController extends TodoListController implements LoaderManager.LoaderCallbacks<QueryResult<TodoItem>> {
 

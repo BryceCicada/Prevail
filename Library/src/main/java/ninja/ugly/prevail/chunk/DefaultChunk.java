@@ -2,19 +2,20 @@ package ninja.ugly.prevail.chunk;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import ninja.ugly.prevail.event.Event;
-import ninja.ugly.prevail.event.dispatcher.EventDispatcher;
-import ninja.ugly.prevail.event.factory.DeleteEventFactory;
-import ninja.ugly.prevail.event.factory.UpdateEventFactory;
-import ninja.ugly.prevail.exception.DeleteException;
-import ninja.ugly.prevail.exception.InsertException;
-import ninja.ugly.prevail.event.factory.InsertEventFactory;
-import ninja.ugly.prevail.event.factory.QueryEventFactory;
-import ninja.ugly.prevail.exception.QueryException;
-import ninja.ugly.prevail.exception.UpdateException;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import ninja.ugly.prevail.event.Event;
+import ninja.ugly.prevail.event.dispatcher.EventDispatcher;
+import ninja.ugly.prevail.event.factory.DeleteEventFactory;
+import ninja.ugly.prevail.event.factory.InsertEventFactory;
+import ninja.ugly.prevail.event.factory.QueryEventFactory;
+import ninja.ugly.prevail.event.factory.UpdateEventFactory;
+import ninja.ugly.prevail.exception.DeleteException;
+import ninja.ugly.prevail.exception.InsertException;
+import ninja.ugly.prevail.exception.QueryException;
+import ninja.ugly.prevail.exception.UpdateException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 
 import ninja.ugly.prevail.event.Event;
 import ninja.ugly.prevail.event.InsertEndEvent;
-import ninja.ugly.prevail.event.factory.InsertEventFactory;
 
 public class InsertEndEventFactory<K, V> extends InsertEventFactory.EmptyInsertEventFactory<K, V> {
   @Override

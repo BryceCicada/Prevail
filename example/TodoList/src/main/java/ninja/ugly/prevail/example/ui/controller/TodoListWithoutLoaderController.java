@@ -2,14 +2,16 @@ package ninja.ugly.prevail.example.ui.controller;
 
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
 import com.google.common.collect.Iterables;
 import com.google.common.eventbus.Subscribe;
-import ninja.ugly.prevail.example.model.domain.TodoItem;
+
+import java.util.Arrays;
+
 import ninja.ugly.prevail.event.DeleteEndEvent;
 import ninja.ugly.prevail.event.InsertEndEvent;
 import ninja.ugly.prevail.event.QueryEndEvent;
-
-import java.util.Arrays;
+import ninja.ugly.prevail.example.model.domain.TodoItem;
 
 public class TodoListWithoutLoaderController extends TodoListController {
 

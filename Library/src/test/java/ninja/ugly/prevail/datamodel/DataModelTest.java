@@ -1,34 +1,46 @@
 package ninja.ugly.prevail.datamodel;
 
 import com.google.common.base.Optional;
-import ninja.ugly.prevail.Key;
-import ninja.ugly.prevail.KeyValueChunk;
-import ninja.ugly.prevail.Value;
-import ninja.ugly.prevail.chunk.Chunk;
-import ninja.ugly.prevail.event.Event;
-import ninja.ugly.prevail.event.factory.DeleteEventFactory;
-import ninja.ugly.prevail.exception.InsertException;
-import ninja.ugly.prevail.event.factory.InsertEventFactory;
-import ninja.ugly.prevail.event.factory.QueryEventFactory;
-import ninja.ugly.prevail.event.factory.UpdateEventFactory;
-import ninja.ugly.prevail.chunk.QueryResult;
-import ninja.ugly.prevail.exception.DeleteException;
-import ninja.ugly.prevail.exception.QueryException;
-import ninja.ugly.prevail.exception.UpdateException;
+
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import ninja.ugly.prevail.Key;
+import ninja.ugly.prevail.KeyValueChunk;
+import ninja.ugly.prevail.Value;
+import ninja.ugly.prevail.chunk.Chunk;
+import ninja.ugly.prevail.chunk.QueryResult;
+import ninja.ugly.prevail.event.Event;
+import ninja.ugly.prevail.event.factory.DeleteEventFactory;
+import ninja.ugly.prevail.event.factory.InsertEventFactory;
+import ninja.ugly.prevail.event.factory.QueryEventFactory;
+import ninja.ugly.prevail.event.factory.UpdateEventFactory;
+import ninja.ugly.prevail.exception.DeleteException;
+import ninja.ugly.prevail.exception.InsertException;
+import ninja.ugly.prevail.exception.QueryException;
+import ninja.ugly.prevail.exception.UpdateException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.anyInt;
 
 public class DataModelTest {
 

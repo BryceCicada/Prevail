@@ -27,18 +27,30 @@ public interface QueryResult<V> extends Iterable<V>, Closeable {
     }
   }
 
-  public static class SingletonQueryResult<T> extends EmptyQueryResult<T> {
-    private T mT;
+  public static class SingletonQueryResult<V> extends EmptyQueryResult<V> {
+    private V mT;
 
-    public SingletonQueryResult(final T t) {
+    public SingletonQueryResult(final V t) {
       mT = t;
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<V> iterator() {
       return Iterators.singletonIterator(mT);
     }
   }
 
 
+  public class IterableQueryResult<V> extends EmptyQueryResult<V>{
+    private Iterable<V> mValues;
+
+    public IterableQueryResult(Iterable<V> values) {
+      mValues = values;
+    }
+
+    @Override
+    public Iterator<V> iterator() {
+      return mValues.iterator();
+    }
+  }
 }

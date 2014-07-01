@@ -7,8 +7,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import ninja.ugly.prevail.example.ui.fragment.AboutFragment;
+
 import ninja.ugly.prevail.example.R;
+import ninja.ugly.prevail.example.ui.fragment.AboutFragment;
 
 public class PrevailActivity extends Activity implements SharedPreferences.OnSharedPreferenceChangeListener {
 

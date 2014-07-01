@@ -1,9 +1,9 @@
 package ninja.ugly.prevail;
 
-import ninja.ugly.prevail.exception.InsertException;
 import ninja.ugly.prevail.chunk.DefaultChunk;
 import ninja.ugly.prevail.chunk.QueryResult;
 import ninja.ugly.prevail.exception.DeleteException;
+import ninja.ugly.prevail.exception.InsertException;
 import ninja.ugly.prevail.exception.QueryException;
 import ninja.ugly.prevail.exception.UpdateException;
 
