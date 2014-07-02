@@ -8,10 +8,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import ninja.ugly.prevail.chunk.Chunk;
 import ninja.ugly.prevail.chunk.QueryResult;
-import ninja.ugly.prevail.example.event.factory.DeleteEventFactory;
-import ninja.ugly.prevail.example.event.factory.InsertEventFactory;
-import ninja.ugly.prevail.example.event.factory.QueryEventFactory;
-import ninja.ugly.prevail.example.event.factory.UpdateEventFactory;
+import ninja.ugly.prevail.event.factory.DeleteEventFactory;
+import ninja.ugly.prevail.event.factory.InsertEventFactory;
+import ninja.ugly.prevail.event.factory.QueryEventFactory;
+import ninja.ugly.prevail.event.factory.UpdateEventFactory;
 
 import java.util.*;
 import java.util.concurrent.*;

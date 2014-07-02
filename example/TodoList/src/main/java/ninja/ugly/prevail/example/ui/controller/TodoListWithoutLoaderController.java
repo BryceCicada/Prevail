@@ -5,9 +5,9 @@ import android.widget.ListView;
 import com.google.common.collect.Iterables;
 import com.google.common.eventbus.Subscribe;
 import ninja.ugly.prevail.example.model.domain.TodoItem;
-import ninja.ugly.prevail.example.event.DeleteEndEvent;
-import ninja.ugly.prevail.example.event.InsertEndEvent;
-import ninja.ugly.prevail.example.event.QueryEndEvent;
+import ninja.ugly.prevail.event.DeleteEndEvent;
+import ninja.ugly.prevail.event.InsertEndEvent;
+import ninja.ugly.prevail.event.QueryEndEvent;
 
 import java.util.Arrays;
 

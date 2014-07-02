@@ -1,10 +1,10 @@
 package ninja.ugly.prevail.example.event.database;
 
 import com.google.common.base.Optional;
-import ninja.ugly.prevail.example.event.Event;
-import ninja.ugly.prevail.example.event.InsertEndEvent;
+import ninja.ugly.prevail.event.Event;
+import ninja.ugly.prevail.event.InsertEndEvent;
 
-import static ninja.ugly.prevail.example.event.factory.InsertEventFactory.EmptyInsertEventFactory;
+import static ninja.ugly.prevail.event.factory.InsertEventFactory.EmptyInsertEventFactory;
 
 public class DatabaseInsertEventFactory<K, V> extends EmptyInsertEventFactory<K, V> {
   @Override

@@ -13,9 +13,9 @@ import ninja.ugly.prevail.example.event.database.DatabaseQueryEventFactory;
 import ninja.ugly.prevail.example.model.database.DatabaseChunk;
 import ninja.ugly.prevail.chunk.Chunk;
 import ninja.ugly.prevail.datamodel.DataModel;
-import ninja.ugly.prevail.example.event.dispatcher.EventBusEventDispatcher;
-import ninja.ugly.prevail.example.event.dispatcher.EventDispatcher;
-import ninja.ugly.prevail.example.event.dispatcher.ExecutorEventDispatcher;
+import ninja.ugly.prevail.event.dispatcher.EventBusEventDispatcher;
+import ninja.ugly.prevail.event.dispatcher.EventDispatcher;
+import ninja.ugly.prevail.event.dispatcher.ExecutorEventDispatcher;
 
 public class DataModelService extends Service {
 

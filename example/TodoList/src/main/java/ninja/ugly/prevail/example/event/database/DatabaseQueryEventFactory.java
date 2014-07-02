@@ -3,10 +3,10 @@ package ninja.ugly.prevail.example.event.database;
 import com.google.common.base.Optional;
 
 import ninja.ugly.prevail.chunk.QueryResult;
-import ninja.ugly.prevail.example.event.Event;
-import ninja.ugly.prevail.example.event.QueryEndEvent;
+import ninja.ugly.prevail.event.Event;
+import ninja.ugly.prevail.event.QueryEndEvent;
 
-import static ninja.ugly.prevail.example.event.factory.QueryEventFactory.EmptyQueryEventFactory;
+import static ninja.ugly.prevail.event.factory.QueryEventFactory.EmptyQueryEventFactory;
 
 public class DatabaseQueryEventFactory<K, V> extends EmptyQueryEventFactory<K, V> {
   @Override

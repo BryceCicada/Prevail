@@ -8,12 +8,12 @@ import ninja.ugly.prevail.chunk.Chunk;
 import ninja.ugly.prevail.chunk.HashMapChunk;
 import ninja.ugly.prevail.chunk.QueryResult;
 import ninja.ugly.prevail.datamodel.DataModel;
-import ninja.ugly.prevail.example.event.Event;
-import ninja.ugly.prevail.example.event.QueryEndEvent;
-import ninja.ugly.prevail.example.event.QueryStartEvent;
-import ninja.ugly.prevail.example.event.dispatcher.EventBusEventDispatcher;
+import ninja.ugly.prevail.event.Event;
+import ninja.ugly.prevail.event.QueryEndEvent;
+import ninja.ugly.prevail.event.QueryStartEvent;
+import ninja.ugly.prevail.event.dispatcher.EventBusEventDispatcher;
 import ninja.ugly.prevail.exception.InsertException;
-import ninja.ugly.prevail.example.event.factory.QueryEventFactory;
+import ninja.ugly.prevail.event.factory.QueryEventFactory;
 
 public class Main {
   public static void main(String args[]) throws InterruptedException, InsertException {

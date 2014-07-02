@@ -1,11 +1,11 @@
 package ninja.ugly.prevail.chunk;
 
 
-import ninja.ugly.prevail.example.event.dispatcher.EventDispatcher;
-import ninja.ugly.prevail.example.event.factory.DeleteEventFactory;
-import ninja.ugly.prevail.example.event.factory.InsertEventFactory;
-import ninja.ugly.prevail.example.event.factory.QueryEventFactory;
-import ninja.ugly.prevail.example.event.factory.UpdateEventFactory;
+import ninja.ugly.prevail.event.dispatcher.EventDispatcher;
+import ninja.ugly.prevail.event.factory.DeleteEventFactory;
+import ninja.ugly.prevail.event.factory.InsertEventFactory;
+import ninja.ugly.prevail.event.factory.QueryEventFactory;
+import ninja.ugly.prevail.event.factory.UpdateEventFactory;
 import ninja.ugly.prevail.exception.DeleteException;
 import ninja.ugly.prevail.exception.InsertException;
 import ninja.ugly.prevail.exception.QueryException;

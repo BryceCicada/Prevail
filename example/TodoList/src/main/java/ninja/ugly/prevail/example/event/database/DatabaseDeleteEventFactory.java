@@ -1,10 +1,10 @@
 package ninja.ugly.prevail.example.event.database;
 
 import com.google.common.base.Optional;
-import ninja.ugly.prevail.example.event.DeleteEndEvent;
-import ninja.ugly.prevail.example.event.Event;
+import ninja.ugly.prevail.event.DeleteEndEvent;
+import ninja.ugly.prevail.event.Event;
 
-import static ninja.ugly.prevail.example.event.factory.DeleteEventFactory.EmptyDeleteEventFactory;
+import static ninja.ugly.prevail.event.factory.DeleteEventFactory.EmptyDeleteEventFactory;
 
 public class DatabaseDeleteEventFactory<K> extends EmptyDeleteEventFactory<K> {
   @Override

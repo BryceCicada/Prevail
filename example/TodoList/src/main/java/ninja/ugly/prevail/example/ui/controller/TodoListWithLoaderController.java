@@ -12,7 +12,7 @@ import ninja.ugly.prevail.loader.ChunkLoader;
 import ninja.ugly.prevail.example.model.domain.TodoItem;
 import ninja.ugly.prevail.chunk.QueryResult;
 import ninja.ugly.prevail.datamodel.DataModel;
-import ninja.ugly.prevail.example.event.DataChangeEvent;
+import ninja.ugly.prevail.event.DataChangeEvent;
 
 import java.util.Arrays;
 
