@@ -50,7 +50,7 @@ public class DatabaseChunk extends DefaultChunk<String, TodoItem> {
     } catch (NumberFormatException e) {
       if ("*".equals(queryString)) {
         final QueryResultIterable<TodoItem> items = cupboard().withDatabase(mDatabase).query(TodoItem.class).query();
-        result = new CupboardQueryResultAdapter<TodoItem>(items);
+        result = new CupboardQueryResult<TodoItem>(items);
       } else {
         result = new EmptyQueryResult<TodoItem>();
       }
@@ -90,11 +90,11 @@ public class DatabaseChunk extends DefaultChunk<String, TodoItem> {
     mDatabase = DatabaseHelper.get(context).getWritableDatabase();
   }
 
-  private static class CupboardQueryResultAdapter<T> implements QueryResult<T> {
+  private static class CupboardQueryResult<T> implements QueryResult<T> {
     private QueryResultIterable<T> mItems;
     private boolean mClosed = false;
 
-    private CupboardQueryResultAdapter(final QueryResultIterable<T> items) {
+    private CupboardQueryResult(final QueryResultIterable<T> items) {
       mItems = items;
     }
 

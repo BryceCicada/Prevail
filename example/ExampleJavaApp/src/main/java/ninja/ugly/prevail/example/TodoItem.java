@@ -33,7 +33,7 @@ public class TodoItem {
     mId = id;
   }
 
-  public Optional<Integer> getId() {
+  public Optional<Integer> optionalId() {
     return mId == null ? Optional.<Integer>absent() : Optional.of(mId);
   }
 
