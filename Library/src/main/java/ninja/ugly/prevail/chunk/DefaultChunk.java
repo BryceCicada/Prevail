@@ -36,6 +36,9 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
   public DefaultChunk() {
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public K insert(final V value, final InsertEventFactory<K, V>... customEventFactories) throws InsertException {
     InsertEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new InsertEventFactory[0]);
@@ -73,6 +76,9 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
    */
   protected abstract K doInsert(final V value) throws InsertException;
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public QueryResult<V> query(final K key, final QueryEventFactory<K, V>... customEventFactories) throws QueryException {
     QueryEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new QueryEventFactory[0]);
@@ -106,6 +112,9 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
    */
   protected abstract QueryResult doQuery(final K key) throws QueryException;
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int update(final K key, final V value, final UpdateEventFactory<K, V>... customEventFactories) throws UpdateException {
     UpdateEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new UpdateEventFactory[0]);
@@ -144,6 +153,9 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
    */
   protected abstract int doUpdate(final K key, final V value) throws UpdateException;
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int delete(final K key, final DeleteEventFactory<K>... customEventFactories) throws DeleteException {
     DeleteEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new DeleteEventFactory[0]);
@@ -181,6 +193,9 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
    */
   protected abstract int doDelete(final K key) throws DeleteException;
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void setEventDispatcher(final EventDispatcher eventDispatcher) {
     mEventDispatcher = Optional.fromNullable(eventDispatcher).or(new EventDispatcher.EmptyEventDispatcher());
