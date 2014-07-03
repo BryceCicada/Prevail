@@ -5,10 +5,13 @@ version = '1.0'
 
 repositories {
     mavenCentral()
-    mavenLocal()
+    // Access to sonatype snapshots
+    maven {
+        url "https://oss.sonatype.org/content/groups/public"
+    }
 }
 
 dependencies {
-    compile project(':Library')
+    compile 'ninja.ugly:prevail:0.2.0-SNAPSHOT'
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }

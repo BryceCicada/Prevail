@@ -10,6 +10,10 @@ apply plugin: 'android-library'
 
 repositories {
     mavenCentral()
+    // Access to sonatype snapshots
+    maven {
+        url "https://oss.sonatype.org/content/groups/public"
+    }
 }
 
 android {
@@ -35,7 +39,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:19.+'
-    //compile project(':Library')
-    compile 'ninja.ugly:prevail:0.2.0'
+    compile 'ninja.ugly:prevail:0.2.0-SNAPSHOT'
 
 }
