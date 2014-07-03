@@ -6,7 +6,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 group = 'ninja.ugly'
-version = '0.2.0-SNAPSHOT'
+version = '0.2.1-SNAPSHOT'
 ext.artifact= 'prevail'
 
 buildscript {
@@ -34,8 +34,6 @@ artifacts {
 signing {
     sign configurations.archives
 }
-
-
 
 uploadArchives {
     repositories.mavenDeployer {
