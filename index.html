@@ -37,13 +37,28 @@
 
 <p>It simply allows your applications to abstract away the sources of its data. By using Prevail, access to your data becomes asynchronous and event driven. Importantly, the sources of data are decoupled from the logic of your application.</p>
 
-<h3>
-<a name="latest-release" class="anchor" href="#latest-release"><span class="octicon octicon-link"></span></a>Latest Release:</h3>
+<h2>
+<a name="latest-release" class="anchor" href="#latest-release"><span class="octicon octicon-link"></span></a>Latest Release:</h2>
 
-<p>Boreas 0.2.1 - <a href="javadoc/0.2.1/base/index.html">Javadoc</a> </p>
+<p>Boreas 0.2.3 - <a href="javadoc/0.2.3/base/index.html">Javadoc</a></p>
 
 <h3>
-<a name="motivations" class="anchor" href="#motivations"><span class="octicon octicon-link"></span></a>Motivations:</h3>
+<a name="gradle-usage" class="anchor" href="#gradle-usage"><span class="octicon octicon-link"></span></a>Gradle Usage</h3>
+
+<p>Import the java library with:</p>
+
+<p><code>dependencies {
+    compile 'ninja.ugly:prevail:0.2.3'
+}</code></p>
+
+<p>Alternatively, Android developers can import the android library directly with just</p>
+
+<p><code>dependencies {
+    compile 'ninja.ugly:android-prevail:0.2.3'
+}</code></p>
+
+<h2>
+<a name="motivations" class="anchor" href="#motivations"><span class="octicon octicon-link"></span></a>Motivations:</h2>
 
 <p>Prevail is motivated by the following points:</p>
 
@@ -58,21 +73,22 @@ Data should be event driven. When stuff changes, you want to know about it. It's
 <li>Many people use ContentProviders for data simply because they give easy access to useful asynchronous functionality. This can easily contaminate your application with Cursors, Uris, ContentObservers and CursorLoaders. It's frustrating to have code that depends on these classes, when they should really never penetrate into the application's domain. It's much nicer to have all the good stuff, like asynchronous loading and notification of change, within your own classes in your own domain.</li>
 <li>What happens when you realise that all the stuff you've been persisting to SharedPreferences needs to be in a database so that you can access it with a richer query language? In that case, client code shouldn't have to change, only the means of data access needs to change.
 Examples:</li>
-</ol><h3>
-<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples:</h3>
+</ol><h2>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples:</h2>
 
 <p>There are two example applications within the sources:</p>
 
 <ol>
 <li> A Java application manages a list of ToDo items.  The items are only persisted in memory, but the client code doesn't care, it merely invokes changes and responds to change events.</li>
 <li> An Android app that implements a little 'To Do' list of items.  The items are displayed in a ListView that can be managed with or without a Loader.</li>
-</ol><h3>
-<a name="roadmap" class="anchor" href="#roadmap"><span class="octicon octicon-link"></span></a>Roadmap:</h3>
+</ol><h2>
+<a name="roadmap" class="anchor" href="#roadmap"><span class="octicon octicon-link"></span></a>Roadmap:</h2>
 
-<p>Improved Javadoc</p>
+<p>Improved main library javadoc
+Android library javadoc</p>
 
-<h3>
-<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License:</h3>
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License:</h2>
 
 <p>Prevail is distributed under the MIT License.  Please see the license document within the source repository.</p>
         </section>
@@ -94,6 +110,16 @@ Examples:</li>
       </div>
     </div>
 
-  
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-52573683-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
