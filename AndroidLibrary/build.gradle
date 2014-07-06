@@ -1,3 +1,7 @@
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'android-library'
+
 buildscript {
     repositories {
         mavenCentral()
@@ -6,14 +10,36 @@ buildscript {
         classpath 'com.android.tools.build:gradle:0.12.+'
     }
 }
-apply plugin: 'android-library'
 
 repositories {
     mavenCentral()
-    // Access to sonatype snapshots
-    maven {
-        url "https://oss.sonatype.org/content/groups/public"
-    }
+}
+
+group = 'ninja.ugly'
+version = '0.2.3'
+ext.artifact = 'android-prevail'
+
+signing {
+    sign configurations.archives
+}
+
+task androidJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+}
+
+task androidJavadocsJar(type: Jar) {
+    classifier = 'javadoc'
+    from androidJavadocs.destinationDir
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives androidSourcesJar
+    archives androidJavadocsJar
 }
 
 android {
@@ -24,7 +50,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 19
         versionCode 1
-        versionName '1.0'
+        versionName project.version
     }
     buildTypes {
         release {
@@ -32,13 +58,54 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    productFlavors {
-    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:19.+'
-    compile 'ninja.ugly:prevail:0.2.0-SNAPSHOT'
+    compile 'ninja.ugly:prevail:0.2.3'
+}
 
+uploadArchives {
+    repositories.mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        if (project.version.endsWith('-SNAPSHOT'))
+            ext.repoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+        else
+            ext.repoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+
+        repository(url: repoUrl) {
+            authentication(userName: "${sonatype_username}", password: "${sonatype_password}")
+        }
+
+        pom.artifactId = project.ext.artifact
+        pom.project {
+            name 'Android Prevail'
+            packaging 'aar'
+            description 'Android Prevail is a simple data abstraction library for event driven Android apps.'
+            url 'http://brycecicada.github.com/Prevail'
+
+            scm {
+                url 'scm:git@github.com:BryceCicada/Prevail.git'
+                connection 'scm:git@github.com:BryceCicada/Prevail.git'
+                developerConnection 'scm:git@github.com:BryceCicada/Prevail.git'
+            }
+
+            licenses {
+                license {
+                    name 'The MIT License'
+                    url 'https://github.com/BryceCicada/Prevail/blob/master/LICENSE.md'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'brycecicada'
+                    name 'Chris Nix'
+                }
+            }
+        }
+    }
 }

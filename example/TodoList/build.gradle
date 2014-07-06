@@ -11,10 +11,6 @@ apply plugin: 'android'
 
 repositories {
     mavenCentral()
-    // Access to sonatype snapshots
-    maven {
-        url "https://oss.sonatype.org/content/groups/public"
-    }
 }
 
 android {
@@ -41,7 +37,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:19.+'
     compile 'com.google.guava:guava:16.0.1'
     compile 'nl.qbusict:cupboard:2.0.1'
-    compile project(':AndroidLibrary')
-    compile 'ninja.ugly:prevail:0.2.0-SNAPSHOT'
-
+    compile 'ninja.ugly:android-prevail:0.2.3'
 }

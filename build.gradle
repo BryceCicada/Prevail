@@ -9,6 +9,10 @@ allprojects {
 
     repositories {
         mavenCentral()
+        // Access to sonatype snapshots
+        //maven {
+        //    url "https://oss.sonatype.org/content/groups/public"
+        //}
     }
 }
 
