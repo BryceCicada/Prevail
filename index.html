@@ -64,31 +64,37 @@
 
 <p>Prevail is motivated by the following points:</p>
 
-<ol>
+<ul>
 <li>The majority of code in an application cares little about the source of the data on which it operates.
 Data should be event driven. When stuff changes, you want to know about it. It's not enough to just query an object. We want to know when that object becomes invalid.</li>
 <li>Sources of data should be easily changed, without disrupting lots of code. It should be easy to swap a network resource for a hashtable during testing. Sure, that could be achieved by setting up fake test objects, but why bother when it should be easy to swap in new data sources quickly in the first place. Such decoupled code is easier to change in the future too.</li>
 <li>It should be easy to perform data operations on multiple data sources at once. A local cache query might return quickly, whilst a network query may take longer. However, it should be possible for client code to be completely unaware that there are multiple sources of data. It should be possible for a client merely to handle the data as it arrives.</li>
-</ol><p>In particular, on Android:</p>
+</ul><p>In particular, on Android:</p>
 
-<ol>
-<li>Many people use ContentProviders for data simply because they give easy access to useful asynchronous functionality. This can easily contaminate your application with Cursors, Uris, ContentObservers and CursorLoaders. It's frustrating to have code that depends on these classes, when they should really never penetrate into the application's domain. It's much nicer to have all the good stuff, like asynchronous loading and notification of change, within your own classes in your own domain.</li>
-<li>What happens when you realise that all the stuff you've been persisting to SharedPreferences needs to be in a database so that you can access it with a richer query language? In that case, client code shouldn't have to change.</li>
-</ol><h2>
+<ul>
+<li>Many people use ContentProviders for data simply because they give easy access to useful asynchronous functionality however. This can easily contaminate your application with Cursors, Uris, ContentObservers and CursorLoaders. It's frustrating to have code that depends on these classes, when they should really never penetrate into the application's domain. It's much nicer to have all the good stuff, like asynchronous loading and notification of change, within your own classes in your own domain.</li>
+<li>What happens when you realise that all the stuff you've been persisting to SharedPreferences needs to be in a database so that you can access it with a richer query language? In that case, client code shouldn't have to change.  Want to expirement with a NoSQL database, no problem... client code will not care.</li>
+</ul><h2>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples:</h2>
 
 <p>There are two example applications within the sources:</p>
 
 <ol>
-<li> A Java application manages a list of ToDo items.  The items are only persisted in memory, but the client code doesn't care, it merely invokes changes and responds to change events.</li>
-<li> An Android app that implements a little 'To Do' list of items.  The items are displayed in a ListView that can be managed with or without a Loader.</li>
+<li> A Java application manages a list of 'To Do' items.  The items are only persisted in memory, but the client code doesn't care, it merely invokes changes and responds to change events.</li>
+<li> An Android app that implements a little 'To Do' list of items.<br><ul>
+<li>The items are persisted to an SQLite3 database but, again, the client code does not care about this.</li>
+<li>There are controls on the UI for managing the list of items, which simply invoke change and respond to change events.<br>
+</li>
+<li>The items are displayed in a ListView that can be managed with or without a Loader.</li>
+</ul>
+</li>
 </ol><h2>
 <a name="roadmap" class="anchor" href="#roadmap"><span class="octicon octicon-link"></span></a>Roadmap:</h2>
 
-<p>Improved main library javadoc
-Android library javadoc</p>
-
-<h2>
+<ul>
+<li>Improved main library javadoc.</li>
+<li>Android library javadoc.</li>
+</ul><h2>
 <a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License:</h2>
 
 <p>Prevail is distributed under the MIT License.  Please see the license document within the source repository.</p>
