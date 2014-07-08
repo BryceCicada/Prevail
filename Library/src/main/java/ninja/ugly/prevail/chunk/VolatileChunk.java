@@ -18,20 +18,40 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A simple extension of DefaultChunk that stores data in memory.
  */
-public class HashMapChunk<K, V> extends DefaultChunk<K, V> {
+public class VolatileChunk<K, V> extends DefaultChunk<K, V> {
 
   private final Map<K, V> mMap;
   private final KeyFactory<K, V> mKeyFactory;
 
-  public HashMapChunk(KeyFactory<K, V> keyFactory) {
+  /**
+   * Constructs a new HashMapChunk that uses the given KeyFactory to generate keys
+   * during insertion.
+   *
+   * @param keyFactory A KeyFactory used to create keys to insert objects under.
+   */
+  public VolatileChunk(KeyFactory<K, V> keyFactory) {
     this(Maps.<K,V>newHashMap(), keyFactory);
   }
 
-  public HashMapChunk(Map<K, V> map, KeyFactory<K, V> keyFactory) {
+  /**
+   * Constructs a new HashMapChunk that uses the given backing Map and the given KeyFactory
+   * to generate keys during insertion.
+   * <p>
+   * This implementation uses the given Map directly for storage.  Changes to this Chunk
+   * will be reflected in the given Map, and vice-versa.
+   *
+   * @param map The Map to use as backing storage.
+   * @param keyFactory A KeyFactory used to create keys to insert objects under.
+   */
+  public VolatileChunk(Map<K, V> map, KeyFactory<K, V> keyFactory) {
     mMap = checkNotNull(map);
     mKeyFactory = checkNotNull(keyFactory);
   }
 
+  /**
+   * Insert the given value into the backing storage.
+   * @return The key at which the given value can be obtained.
+   */
   @Override
   protected K doInsert(final V value) throws InsertException {
     K key = mKeyFactory.createKey(value);
@@ -39,6 +59,10 @@ public class HashMapChunk<K, V> extends DefaultChunk<K, V> {
     return key;
   }
 
+  /**
+   * Query the given key from the backing storage.
+   * @return The results
+   */
   @Override
   protected QueryResult<V> doQuery(final K key) throws QueryException {
     final QueryResult<V> result;
@@ -50,6 +74,13 @@ public class HashMapChunk<K, V> extends DefaultChunk<K, V> {
     return result;
   }
 
+  /**
+   * Update the given key in backing storage with the given value.
+   * <p>
+   * Some Chunk implementations might allow update of multiple values with a non-specific key.
+   * Not this one.
+   * @return The number of elements updated.  Either 0 or 1.
+   */
   @Override
   protected int doUpdate(final K key, final V value) throws UpdateException {
     int numUpdates = 0;
@@ -60,6 +91,13 @@ public class HashMapChunk<K, V> extends DefaultChunk<K, V> {
     return numUpdates;
   }
 
+  /**
+   * Delete the given key from the backing storage.
+   * <p>
+   * Some Chunk implementations might allow update of multiple values with a non-specific key.
+   * Not this one.
+   * @return The number of values deleted.  Either 0 or 1.
+   */
   @Override
   protected int doDelete(final K key) throws DeleteException {
     int numUpdates = 0;
@@ -75,6 +113,10 @@ public class HashMapChunk<K, V> extends DefaultChunk<K, V> {
     return mMap.toString();
   }
 
+  /**
+   * Returns an unmodifiable collection of values from the backing map.
+   * @return All the values in the backing map.
+   */
   protected Collection<V> getValues() {
     return Collections.unmodifiableCollection(mMap.values());
   }
