@@ -6,6 +6,10 @@ import ninja.ugly.prevail.chunk.QueryResult;
 import ninja.ugly.prevail.event.Event;
 import ninja.ugly.prevail.event.QueryEndEvent;
 
+/**
+ * A QueryEventFactory that just returns QueryEndEvents at the end of a query operation.
+ * @param <K>
+ */
 public class QueryEndEventFactory<K, V> extends QueryEventFactory.EmptyQueryEventFactory<K, V> {
   @Override
   public <E extends Event> Optional<E> endEvent(K key, QueryResult<V> values) {

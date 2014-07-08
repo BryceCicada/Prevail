@@ -201,21 +201,33 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
     mEventDispatcher = Optional.fromNullable(eventDispatcher).or(new EventDispatcher.EmptyEventDispatcher());
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void addEventFactory(final InsertEventFactory insertEventFactory) {
     mInsertEventFactories.add(checkNotNull(insertEventFactory));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void addEventFactory(final QueryEventFactory queryEventFactory) {
     mQueryEventFactories.add(checkNotNull(queryEventFactory));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void addEventFactory(final UpdateEventFactory updateEventFactory) {
     mUpdateEventFactories.add(checkNotNull(updateEventFactory));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void addEventFactory(final DeleteEventFactory deleteEventFactory) {
     mDeleteEventFactories.add(checkNotNull(deleteEventFactory));
