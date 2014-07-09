@@ -20,6 +20,15 @@ public interface DeleteEventFactory<K> extends EventFactory<K, Object> {
   <E extends Event> Optional<E> startEvent(K key);
 
   /**
+   * Generate a progress event for deleting the given Key.
+   * @param key the key being deleted.
+   * @param progress a representation of the progress of the delete operation.
+   * @param <E> the type of event.
+   * @return an Optional containing the generated event.  Not null.
+   */
+  <E extends Event> Optional<E> progressEvent(K key, double progress);
+
+  /**
    * Generate an end event for deleting the given Key.
    * @param key the key being deleted.
    * @param numValuesDeleted the number of values deleted in the chunk operation.
@@ -49,6 +58,11 @@ public interface DeleteEventFactory<K> extends EventFactory<K, Object> {
     }
 
     @Override
+    public <E extends Event> Optional<E> progressEvent(K key, double progress) {
+      return Optional.absent();
+    }
+
+    @Override
     public <E extends Event> Optional<E> endEvent(final K key, final int numValuesDeleted) {
       return Optional.absent();
     }
@@ -57,5 +71,6 @@ public interface DeleteEventFactory<K> extends EventFactory<K, Object> {
     public <E extends Event> Optional<E> exceptionEvent(final K key, final DeleteException exception) {
       return Optional.absent();
     }
+
   }
 }

@@ -21,6 +21,15 @@ public interface QueryEventFactory<K, V> extends EventFactory<K, V> {
   <E extends Event> Optional<E> startEvent(K key);
 
   /**
+   * Generate a progress event for querying the given key.
+   * @param key the key being queried.
+   * @param progress a representation of the progress of the delete operation.
+   * @param <E> the type of event.
+   * @return an Optional containing the generated event.  Not null.
+   */
+  <E extends Event> Optional<E> progressEvent(K key, double progress);
+
+  /**
    * Generate an end event for querying the given key with the given QueryResult.
    * @param key the key being queried.
    * @param values the QueryResult of the query operation.
@@ -47,6 +56,11 @@ public interface QueryEventFactory<K, V> extends EventFactory<K, V> {
   public static class EmptyQueryEventFactory<K, V> implements QueryEventFactory<K, V> {
     @Override
     public <E extends Event> Optional<E> startEvent(final K key) {
+      return Optional.absent();
+    }
+
+    @Override
+    public <E extends Event> Optional<E> progressEvent(K key, double progress) {
       return Optional.absent();
     }
 

@@ -1,0 +1,2 @@
+HashMapChunk renamed VolatileChunk since it's not necessarily backed by a HashMap.
+Added progress events

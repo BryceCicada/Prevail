@@ -29,7 +29,7 @@ public class VolatileChunk<K, V> extends DefaultChunk<K, V> {
    *
    * @param keyFactory A KeyFactory used to create keys to insert objects under.
    */
-  public VolatileChunk(KeyFactory<K, V> keyFactory) {
+  public VolatileChunk(final KeyFactory<K, V> keyFactory) {
     this(Maps.<K,V>newHashMap(), keyFactory);
   }
 
@@ -43,7 +43,7 @@ public class VolatileChunk<K, V> extends DefaultChunk<K, V> {
    * @param map The Map to use as backing storage.
    * @param keyFactory A KeyFactory used to create keys to insert objects under.
    */
-  public VolatileChunk(Map<K, V> map, KeyFactory<K, V> keyFactory) {
+  public VolatileChunk(final Map<K, V> map, final KeyFactory<K, V> keyFactory) {
     mMap = checkNotNull(map);
     mKeyFactory = checkNotNull(keyFactory);
   }
@@ -53,8 +53,8 @@ public class VolatileChunk<K, V> extends DefaultChunk<K, V> {
    * @return The key at which the given value can be obtained.
    */
   @Override
-  protected K doInsert(final V value) throws InsertException {
-    K key = mKeyFactory.createKey(value);
+  protected K doInsert(final V value, final OnProgressUpdateListener onProgressUpdateListener) throws InsertException {
+    final K key = mKeyFactory.createKey(value);
     mMap.put(key, value);
     return key;
   }
@@ -64,7 +64,7 @@ public class VolatileChunk<K, V> extends DefaultChunk<K, V> {
    * @return The results
    */
   @Override
-  protected QueryResult<V> doQuery(final K key) throws QueryException {
+  protected QueryResult<V> doQuery(final K key, final OnProgressUpdateListener onProgressUpdateListener) throws QueryException {
     final QueryResult<V> result;
     if (mMap.containsKey(key)) {
       result = new QueryResult.SingletonQueryResult<V>(mMap.get(key));
@@ -82,7 +82,7 @@ public class VolatileChunk<K, V> extends DefaultChunk<K, V> {
    * @return The number of elements updated.  Either 0 or 1.
    */
   @Override
-  protected int doUpdate(final K key, final V value) throws UpdateException {
+  protected int doUpdate(final K key, final V value, final OnProgressUpdateListener progressUpdateListener) throws UpdateException {
     int numUpdates = 0;
     if (mMap.containsKey(key)) {
       mMap.put(key, value);
@@ -99,7 +99,7 @@ public class VolatileChunk<K, V> extends DefaultChunk<K, V> {
    * @return The number of values deleted.  Either 0 or 1.
    */
   @Override
-  protected int doDelete(final K key) throws DeleteException {
+  protected int doDelete(final K key, final OnProgressUpdateListener onProgressUpdateListener) throws DeleteException {
     int numUpdates = 0;
     if (mMap.containsKey(key)) {
       mMap.remove(key);
@@ -128,14 +128,14 @@ public class VolatileChunk<K, V> extends DefaultChunk<K, V> {
     K createKey(V value);
 
     public static class DefaultKeyFactory<K, V> implements KeyFactory<K, V> {
-      private Function<V, K> mFunction;
+      private final Function<V, K> mFunction;
 
-      DefaultKeyFactory(Function<V, K> function) {
+      DefaultKeyFactory(final Function<V, K> function) {
         mFunction = function;
       }
 
       @Override
-      public K createKey(V value) {
+      public K createKey(final V value) {
         return mFunction.apply(value);
       }
     }
@@ -162,7 +162,7 @@ public class VolatileChunk<K, V> extends DefaultChunk<K, V> {
       private int mCounter = 0;
 
       @Override
-      public Integer apply(V input) {
+      public Integer apply(final V input) {
         return mCounter++;
       }
     }
