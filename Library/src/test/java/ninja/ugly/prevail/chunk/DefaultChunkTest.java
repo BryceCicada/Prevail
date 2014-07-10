@@ -252,7 +252,7 @@ public class DefaultChunkTest {
     final EventDispatcher eventDispatcher = new EventBusEventDispatcher(eventBus);
     mChunk.setEventDispatcher(eventDispatcher);
     mChunk.addEventFactory(eventFactory);
-    mChunk.<Key>delete(mKey);
+    mChunk.delete(mKey);
     verify(eventBus, times(1)).post(argThat(is(mEvent)));
   }
 
