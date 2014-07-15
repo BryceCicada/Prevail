@@ -7,12 +7,12 @@ allprojects {
         }
     }
 
-    configurations.all {
-        resolutionStrategy {
-            // Library version conflicts will cause pain.  Let's be strict about this and force manual resolution.
-            failOnVersionConflict()
-        }
-    }
+//    configurations.all {
+//        resolutionStrategy {
+//            // Library version conflicts will cause pain.  Let's be strict about this and force manual resolution.
+//            failOnVersionConflict()
+//        }
+//    }
 
     repositories {
         mavenCentral()

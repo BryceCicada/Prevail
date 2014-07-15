@@ -7,7 +7,7 @@ apply plugin: 'signing'
 
 group = 'ninja.ugly'
 version = "${prevail_version}"
-ext.artifact= 'prevail'
+ext.artifact = 'prevail'
 
 buildscript {
     dependencies {
