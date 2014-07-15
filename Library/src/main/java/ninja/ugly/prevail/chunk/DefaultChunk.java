@@ -1,6 +1,7 @@
 package ninja.ugly.prevail.chunk;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -41,21 +42,24 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
    */
   @Override
   public K insert(final V value, final InsertEventFactory<K, V>... customEventFactories) throws InsertException {
-    InsertEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new InsertEventFactory[0]);
+    final InsertEventFactory[] fs = Optional.fromNullable(customEventFactories).or(new InsertEventFactory[0]);
+    final Iterable<InsertEventFactory> factories = Iterables.concat(mInsertEventFactories, Lists.newArrayList(fs));
 
     try {
-      sendInsertStartEvent(mInsertEventFactories, value);
       sendInsertStartEvent(factories, value);
 
-      final K key = doInsert(value);
+      final K key = doInsert(value, new OnProgressUpdateListener() {
+        @Override
+        public void onProgressUpdate(double progress) {
+          sendInsertProgressEvent(factories, value, progress);
+        }
+      });
 
       sendInsertEndEvent(factories, key, value);
-      sendInsertEndEvent(mInsertEventFactories, key, value);
 
       return key;
     } catch (InsertException e) {
       sendInsertExceptionEvent(factories, value, e);
-      sendInsertExceptionEvent(mInsertEventFactories, value, e);
       throw e;
     }
   }
@@ -71,31 +75,35 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
    * may wish to replace the value in that case.
    *
    * @param value  The value to be stored
+   * @param onProgressUpdateListener
    * @return a Key into the chunk for later retrieval of the given value.
    * @throws InsertException
    */
-  protected abstract K doInsert(final V value) throws InsertException;
+  protected abstract K doInsert(final V value, OnProgressUpdateListener onProgressUpdateListener) throws InsertException;
 
   /**
    * {@inheritDoc}
    */
   @Override
   public QueryResult<V> query(final K key, final QueryEventFactory<K, V>... customEventFactories) throws QueryException {
-    QueryEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new QueryEventFactory[0]);
+    final QueryEventFactory[] fs = Optional.fromNullable(customEventFactories).or(new QueryEventFactory[0]);
+    final Iterable<QueryEventFactory> factories = Iterables.concat(mQueryEventFactories, Lists.newArrayList(fs));
 
     try {
-      sendQueryStartEvent(mQueryEventFactories, key);
       sendQueryStartEvent(factories, key);
 
-      final QueryResult values = doQuery(key);
+      final QueryResult values = doQuery(key, new OnProgressUpdateListener() {
+        @Override
+        public void onProgressUpdate(double progress) {
+          sendQueryProgressEvent(factories, key, progress);
+        }
+      });
 
       sendQueryEndEvent(factories, key, values);
-      sendQueryEndEvent(mQueryEventFactories, key, values);
 
       return values;
     } catch (QueryException e) {
       sendQueryExceptionEvent(factories, key, e);
-      sendQueryExceptionEvent(mQueryEventFactories, key, e);
       throw e;
     }
   }
@@ -110,28 +118,31 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
    * @return a QueryResult containing the returned values.
    * @throws QueryException
    */
-  protected abstract QueryResult doQuery(final K key) throws QueryException;
+  protected abstract QueryResult doQuery(final K key, OnProgressUpdateListener onProgressUpdateListener) throws QueryException;
 
   /**
    * {@inheritDoc}
    */
   @Override
   public int update(final K key, final V value, final UpdateEventFactory<K, V>... customEventFactories) throws UpdateException {
-    UpdateEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new UpdateEventFactory[0]);
+    final UpdateEventFactory[] fs = Optional.fromNullable(customEventFactories).or(new UpdateEventFactory[0]);
+    final Iterable<UpdateEventFactory> factories = Iterables.concat(mUpdateEventFactories, Lists.newArrayList(fs));
 
     try {
-      sendUpdateStartEvent(mUpdateEventFactories, key, value);
       sendUpdateStartEvent(factories, key, value);
 
-      final int i = doUpdate(key, value);
+      final int i = doUpdate(key, value, new OnProgressUpdateListener() {
+        @Override
+        public void onProgressUpdate(double progress) {
+          sendUpdateProgressEvent(factories, key, value, progress);
+        }
+      });
 
       sendUpdateEndEvent(factories, key, value, i);
-      sendUpdateEndEvent(mUpdateEventFactories, key, value, i);
 
       return i;
     } catch (UpdateException e) {
       sendUpdateExceptionEvent(factories, key, value, e);
-      sendUpdateExceptionEvent(mUpdateEventFactories, key, value, e);
       throw e;
     }
   }
@@ -148,31 +159,35 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
    *
    * @param key The key of the value to be updated.
    * @param value  The value to be stored.
+   * @param progressUpdateListener
    * @return the number of values updated.
    * @throws UpdateException
    */
-  protected abstract int doUpdate(final K key, final V value) throws UpdateException;
+  protected abstract int doUpdate(final K key, final V value, OnProgressUpdateListener progressUpdateListener) throws UpdateException;
 
   /**
    * {@inheritDoc}
    */
   @Override
   public int delete(final K key, final DeleteEventFactory<K>... customEventFactories) throws DeleteException {
-    DeleteEventFactory[] factories = Optional.fromNullable(customEventFactories).or(new DeleteEventFactory[0]);
+    final DeleteEventFactory[] fs = Optional.fromNullable(customEventFactories).or(new DeleteEventFactory[0]);
+    final Iterable<DeleteEventFactory> factories = Iterables.concat(mDeleteEventFactories, Lists.newArrayList(fs));
 
     try {
-      sendDeleteStartEvent(mDeleteEventFactories, key);
-      sendDeleteStartEvent(customEventFactories, key);
+      sendDeleteStartEvent(factories, key);
 
-      final int i = doDelete(key);
+      final int i = doDelete(key, new OnProgressUpdateListener() {
+        @Override
+        public void onProgressUpdate(double progress) {
+          sendDeleteProgressEvent(factories, key, progress);
+        }
+      });
 
-      sendDeleteEndEvent(customEventFactories, key, i);
-      sendDeleteEndEvent(mDeleteEventFactories, key, i);
+      sendDeleteEndEvent(factories, key, i);
 
       return i;
     } catch (DeleteException e) {
       sendDeleteExceptionEvent(factories, key, e);
-      sendDeleteExceptionEvent(mDeleteEventFactories, key, e);
       throw e;
     }
   }
@@ -188,10 +203,11 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
    * may wish to do nothing.
    *
    * @param key The key of the value to be deleted.
+   * @param onProgressUpdateListener
    * @return the number of values deleted.
    * @throws DeleteException
    */
-  protected abstract int doDelete(final K key) throws DeleteException;
+  protected abstract int doDelete(final K key, OnProgressUpdateListener onProgressUpdateListener) throws DeleteException;
 
   /**
    * {@inheritDoc}
@@ -201,21 +217,33 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
     mEventDispatcher = Optional.fromNullable(eventDispatcher).or(new EventDispatcher.EmptyEventDispatcher());
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void addEventFactory(final InsertEventFactory insertEventFactory) {
     mInsertEventFactories.add(checkNotNull(insertEventFactory));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void addEventFactory(final QueryEventFactory queryEventFactory) {
     mQueryEventFactories.add(checkNotNull(queryEventFactory));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void addEventFactory(final UpdateEventFactory updateEventFactory) {
     mUpdateEventFactories.add(checkNotNull(updateEventFactory));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void addEventFactory(final DeleteEventFactory deleteEventFactory) {
     mDeleteEventFactories.add(checkNotNull(deleteEventFactory));
@@ -226,10 +254,6 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
     if (endEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(endEvent.get());
     }
-  }
-
-  private void sendInsertEndEvent(final InsertEventFactory[] eventFactories, final K key, final V value) {
-    sendInsertEndEvent(Lists.newArrayList(eventFactories), key, value);
   }
 
   private void sendInsertEndEvent(final Iterable<InsertEventFactory> eventFactories, final K key, final V value) {
@@ -279,13 +303,61 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
     }
   }
 
-  private void sendDeleteEndEvent(final DeleteEventFactory[] eventFactories, final K key, final int numValuesDeleted) {
-    sendDeleteEndEvent(Lists.newArrayList(eventFactories), key, numValuesDeleted);
-  }
-
   private void sendDeleteEndEvent(final Iterable<DeleteEventFactory> eventFactories, final K key, final int numValuesDeleted) {
     for (DeleteEventFactory eventFactory : eventFactories) {
       sendDeleteEndEvent(eventFactory, key, numValuesDeleted);
+    }
+  }
+
+  private void sendDeleteProgressEvent(final DeleteEventFactory eventFactory, final K key, final double progress) {
+    final Optional<Event> progressEvent = eventFactory.progressEvent(key, progress);
+    if (progressEvent.isPresent()) {
+      mEventDispatcher.dispatchEvent(progressEvent.get());
+    }
+  }
+
+  private void sendDeleteProgressEvent(final Iterable<DeleteEventFactory> eventFactories, final K key, final double progress) {
+    for (DeleteEventFactory eventFactory : eventFactories) {
+      sendDeleteProgressEvent(eventFactory, key, progress);
+    }
+  }
+
+  private void sendInsertProgressEvent(final InsertEventFactory eventFactory, final V value, final double progress) {
+    final Optional<Event> progressEvent = eventFactory.progressEvent(value, progress);
+    if (progressEvent.isPresent()) {
+      mEventDispatcher.dispatchEvent(progressEvent.get());
+    }
+  }
+
+  private void sendInsertProgressEvent(final Iterable<InsertEventFactory> eventFactories, final V value, final double progress) {
+    for (InsertEventFactory eventFactory : eventFactories) {
+      sendInsertProgressEvent(eventFactory, value, progress);
+    }
+  }
+
+  private void sendQueryProgressEvent(final QueryEventFactory eventFactory, final K key, final double progress) {
+    final Optional<Event> progressEvent = eventFactory.progressEvent(key, progress);
+    if (progressEvent.isPresent()) {
+      mEventDispatcher.dispatchEvent(progressEvent.get());
+    }
+  }
+
+  private void sendQueryProgressEvent(final Iterable<QueryEventFactory> eventFactories, final K key, final double progress) {
+    for (QueryEventFactory eventFactory : eventFactories) {
+      sendQueryProgressEvent(eventFactory, key, progress);
+    }
+  }
+
+  private void sendUpdateProgressEvent(final UpdateEventFactory eventFactory, final K key, final V value, final double progress) {
+    final Optional<Event> progressEvent = eventFactory.progressEvent(key, value, progress);
+    if (progressEvent.isPresent()) {
+      mEventDispatcher.dispatchEvent(progressEvent.get());
+    }
+  }
+
+  private void sendUpdateProgressEvent(final Iterable<UpdateEventFactory> eventFactories, final K key, final V value, final double progress) {
+    for (UpdateEventFactory eventFactory : eventFactories) {
+      sendUpdateProgressEvent(eventFactory, key, value, progress);
     }
   }
 
@@ -294,10 +366,6 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
     if (exceptionEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(exceptionEvent.get());
     }
-  }
-
-  private void sendInsertExceptionEvent(final InsertEventFactory[] eventFactories, final V value, final InsertException exception) {
-    sendInsertExceptionEvent(Lists.newArrayList(eventFactories), value, exception);
   }
 
   private void sendInsertExceptionEvent(final Iterable<InsertEventFactory> eventFactories, final V value, final InsertException exception) {
@@ -347,10 +415,6 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
     }
   }
 
-  private void sendDeleteExceptionEvent(final DeleteEventFactory[] eventFactories, final K key, final DeleteException exception) {
-    sendDeleteExceptionEvent(Lists.newArrayList(eventFactories), key, exception);
-  }
-
   private void sendDeleteExceptionEvent(final Iterable<DeleteEventFactory> eventFactories, final K key, final DeleteException exception) {
     for (DeleteEventFactory eventFactory : eventFactories) {
       sendDeleteExceptionEvent(eventFactory, key, exception);
@@ -362,10 +426,6 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
     if (startEvent.isPresent()) {
       mEventDispatcher.dispatchEvent(startEvent.get());
     }
-  }
-
-  private void sendInsertStartEvent(final InsertEventFactory[] eventFactories, final V value) {
-    sendInsertStartEvent(Lists.newArrayList(eventFactories), value);
   }
 
   private void sendInsertStartEvent(final Iterable<InsertEventFactory> eventFactories, final V value) {
@@ -415,14 +475,20 @@ public abstract class DefaultChunk<K, V> implements Chunk<K, V> {
     }
   }
 
-  private void sendDeleteStartEvent(final DeleteEventFactory[] eventFactories, final K key) {
-    sendDeleteStartEvent(Lists.newArrayList(eventFactories), key);
-  }
-
   private void sendDeleteStartEvent(final Iterable<DeleteEventFactory> eventFactories, final K key) {
     for (DeleteEventFactory eventFactory : eventFactories) {
       sendDeleteStartEvent(eventFactory, key);
     }
   }
 
+  public interface OnProgressUpdateListener {
+    void onProgressUpdate(double progress);
+
+    public static class EmptyOnProgressUpdateListener implements OnProgressUpdateListener {
+      @Override
+      public void onProgressUpdate(double progress) {
+        // Do nothing.
+      }
+    }
+  }
 }

@@ -1,0 +1,4 @@
+HashMapChunk renamed VolatileChunk since it's not necessarily backed by a HashMap.
+Added progress events
+Bumped Android library version down to ICS.
+Replaced Iterable<V> with QueryResult<V> in QueryEndEvent.

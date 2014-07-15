@@ -32,12 +32,12 @@ public class DatabaseChunk extends DefaultChunk<String, TodoItem> {
   final SQLiteDatabase mDatabase;
 
   @Override
-  protected String doInsert(final TodoItem value) throws InsertException {
+  protected String doInsert(final TodoItem value, OnProgressUpdateListener onProgressUpdateListener) throws InsertException {
     return Long.toString(cupboard().withDatabase(mDatabase).put(value));
   }
 
   @Override
-  protected QueryResult doQuery(final String queryString) throws QueryException {
+  protected QueryResult doQuery(final String queryString, OnProgressUpdateListener onProgressUpdateListener) throws QueryException {
     QueryResult<TodoItem> result;
     try {
       long lKey = Long.parseLong(queryString);
@@ -59,7 +59,7 @@ public class DatabaseChunk extends DefaultChunk<String, TodoItem> {
   }
 
   @Override
-  protected int doUpdate(final String key, final TodoItem value) throws UpdateException {
+  protected int doUpdate(final String key, final TodoItem value, OnProgressUpdateListener onProgressUpdateListener) throws UpdateException {
     try {
       long lKey = Long.parseLong(key);
       value.setId(lKey);
@@ -71,7 +71,7 @@ public class DatabaseChunk extends DefaultChunk<String, TodoItem> {
   }
 
   @Override
-  protected int doDelete(final String key) throws DeleteException {
+  protected int doDelete(final String key, OnProgressUpdateListener onProgressUpdateListener) throws DeleteException {
     int numDeleted;
     try {
       long lKey = Long.parseLong(key);

@@ -1,5 +1,5 @@
 package ninja.ugly.prevail.event;
 
-/** Marker interface for data Events */
+/** Marker interface for events */
 public interface Event {
 }

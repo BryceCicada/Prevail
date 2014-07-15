@@ -21,6 +21,16 @@ public interface UpdateEventFactory<K, V> extends EventFactory<K,V> {
   <E extends Event> Optional<E> startEvent(K key, V value);
 
   /**
+   * Generate a progress event for updating the given key with the given value.
+   * @param key the key being updated.
+   * @param value the value to update with.
+   * @param progress a representation of the progress of the delete operation.
+   * @param <E> the type of event.
+   * @return an Optional containing the generated event.  Not null.
+   */
+  <E extends Event> Optional<E> progressEvent(K key, V value, double progress);
+
+  /**
    * Generate an end event for updating the given key with the given value.
    * @param key the key being updated.
    * @param value the value to update with.
@@ -49,6 +59,11 @@ public interface UpdateEventFactory<K, V> extends EventFactory<K,V> {
   public static class EmptyUpdateEventFactory<K, V> implements UpdateEventFactory<K, V> {
     @Override
     public <E extends Event> Optional<E> startEvent(final K key, final V value) {
+      return Optional.absent();
+    }
+
+    @Override
+    public <E extends Event> Optional<E> progressEvent(K key, V value, double progress) {
       return Optional.absent();
     }
 

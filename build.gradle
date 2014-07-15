@@ -7,12 +7,20 @@ allprojects {
         }
     }
 
+    prevail_version = '0.2.4'
+//    configurations.all {
+//        resolutionStrategy {
+//            // Library version conflicts will cause pain.  Let's be strict about this and force manual resolution.
+//            failOnVersionConflict()
+//        }
+//    }
+
     repositories {
         mavenCentral()
-        // Access to sonatype snapshots
-        //maven {
-        //    url "https://oss.sonatype.org/content/groups/public"
-        //}
+        //Access to sonatype snapshots
+        maven {
+            url "https://oss.sonatype.org/content/groups/public"
+        }
     }
 }
 

@@ -1,17 +1,19 @@
 package ninja.ugly.prevail.event;
 
 
+import ninja.ugly.prevail.chunk.QueryResult;
+
 public class QueryEndEvent<K, V> implements QueryEvent, EndEvent {
   private final K mKey;
-  private final Iterable<V> mData;
+  private final QueryResult<V> mResult;
 
-  public QueryEndEvent(final K key, final Iterable<V> data) {
+  public QueryEndEvent(final K key, final QueryResult<V> data) {
     mKey = key;
-    mData = data;
+    mResult = data;
   }
 
-  public Iterable<V> getData() {
-    return mData;
+  public QueryResult<V> getResult() {
+    return mResult;
   }
 
   public K getKey() {

@@ -20,6 +20,15 @@ public interface InsertEventFactory<K, V> extends EventFactory<K, V> {
   <E extends Event> Optional<E> startEvent(V value);
 
   /**
+   * Generate a progress event for inserting the given value.
+   * @param value the value being inserted.
+   * @param progress a representation of the progress of the delete operation.
+   * @param <E> the type of event.
+   * @return an Optional containing the generated event.  Not null.
+   */
+  <E extends Event> Optional<E> progressEvent(V value, double progress);
+
+  /**
    * Generate an end event for inserting the given value with the given key.
    * @param key the key returned during the insert operation at which the value can be obtained later.
    * @param value the value being inserted
@@ -46,6 +55,11 @@ public interface InsertEventFactory<K, V> extends EventFactory<K, V> {
   public class EmptyInsertEventFactory<K, V> implements InsertEventFactory<K, V> {
     @Override
     public <E extends Event> Optional<E> startEvent(final V value) {
+      return Optional.absent();
+    }
+
+    @Override
+    public <E extends Event> Optional<E> progressEvent(V value, double progress) {
       return Optional.absent();
     }
 
