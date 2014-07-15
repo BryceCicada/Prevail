@@ -7,7 +7,7 @@ allprojects {
         }
     }
 
-    prevail_version = '0.2.4-SNAPSHOT'
+    prevail_version = '0.2.4'
 //    configurations.all {
 //        resolutionStrategy {
 //            // Library version conflicts will cause pain.  Let's be strict about this and force manual resolution.
