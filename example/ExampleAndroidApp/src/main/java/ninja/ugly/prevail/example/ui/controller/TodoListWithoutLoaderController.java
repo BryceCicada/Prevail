@@ -6,8 +6,10 @@ import android.widget.ListView;
 import com.google.common.collect.Iterables;
 import com.google.common.eventbus.Subscribe;
 
+import java.io.IOException;
 import java.util.Arrays;
 
+import ninja.ugly.prevail.chunk.QueryResult;
 import ninja.ugly.prevail.event.DeleteEndEvent;
 import ninja.ugly.prevail.event.InsertEndEvent;
 import ninja.ugly.prevail.event.QueryEndEvent;
@@ -29,9 +31,11 @@ public class TodoListWithoutLoaderController extends TodoListController {
   }
 
   @Subscribe
-  public void queryEnd(QueryEndEvent event) {
+  public void queryEnd(QueryEndEvent event) throws IOException {
     getItems().clear();
-    getItems().addAll(Arrays.asList(Iterables.toArray(event.getData(), TodoItem.class)));
+    QueryResult<? extends TodoItem> results = event.getResult();
+    getItems().addAll(Arrays.asList(Iterables.toArray(results, TodoItem.class)));
+    results.close();
 
     if (isInserting()) {
       getListView().setSelection(getItems().size() - 1);

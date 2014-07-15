@@ -8,8 +8,8 @@ import ninja.ugly.prevail.event.dispatcher.EventBusEventDispatcher;
 import ninja.ugly.prevail.event.dispatcher.EventDispatcher;
 import ninja.ugly.prevail.exception.InsertException;
 
-import static ninja.ugly.prevail.chunk.HashMapChunk.KeyFactory;
-import static ninja.ugly.prevail.chunk.HashMapChunk.KeyFactory.AutoIncrementingStringKeyFactory;
+import static ninja.ugly.prevail.chunk.VolatileChunk.KeyFactory;
+import static ninja.ugly.prevail.chunk.VolatileChunk.KeyFactory.AutoIncrementingStringKeyFactory;
 
 /**
  * An example Java application using the Prevail library.

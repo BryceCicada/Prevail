@@ -16,7 +16,7 @@ repositories {
 }
 
 group = 'ninja.ugly'
-version = '0.2.3'
+version = '0.2.4-SNAPSHOT'
 ext.artifact = 'android-prevail'
 
 signing {
@@ -47,7 +47,7 @@ android {
     buildToolsVersion '19.1.0'
     defaultConfig {
         applicationId 'ninja.ugly.prevail'
-        minSdkVersion 17
+        minSdkVersion 15
         targetSdkVersion 19
         versionCode 1
         versionName project.version
@@ -63,7 +63,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:19.+'
-    compile 'ninja.ugly:prevail:0.2.3'
+    compile 'ninja.ugly:prevail:' + "${prevail_version}"
 }
 
 uploadArchives {

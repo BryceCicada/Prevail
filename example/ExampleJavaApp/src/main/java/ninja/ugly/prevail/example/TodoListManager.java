@@ -2,10 +2,13 @@ package ninja.ugly.prevail.example;
 
 import com.google.common.eventbus.Subscribe;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Iterator;
 import java.util.Scanner;
 
+import ninja.ugly.prevail.chunk.QueryResult;
 import ninja.ugly.prevail.datamodel.DataModel;
 import ninja.ugly.prevail.event.DataChangeEndEvent;
 import ninja.ugly.prevail.event.QueryEndEvent;
@@ -174,10 +177,11 @@ public class TodoListManager {
 
   /**
    * Update or insert the given TodoItem to the DataModel.
-   * <p>
+   * <p/>
    * The DataModel contains TodoItemChunk at the default segment.  The implementation
    * of TodoItemChunk has strict update and insert semantics.  In other implementations,
    * it may be that TodoItem will be inserted on failure to update.
+   *
    * @param item
    */
   private void updateOrInsert(TodoItem item) {
@@ -201,7 +205,7 @@ public class TodoListManager {
 
   /**
    * And event subscriber registered to respond to the end of any query operation.
-   * <p>
+   * <p/>
    * In this example, queries are performed by Strings.  The queries are of the form
    * "*" or "{id}". Querying for "*" returns all TodoItems from the DataModel, whereas
    * querying for "{id}" returns a particular TodoItem.  Other implementations may have
@@ -220,26 +224,45 @@ public class TodoListManager {
     }
 
     private void handleQueryOne(QueryEndEvent<String, TodoItem> event) {
-      Iterator<TodoItem> iterator = event.getData().iterator();
-      if (iterator.hasNext()) {
-        TodoItem item = iterator.next();
-        System.out.println("Editing: " + item);
-        System.out.print("Toggle [c]omplete or change [n]ame: ");
-        String s = scan("[cCnN]");
-        Action a = new ActionFactory(dataModel, item).getAction(s);
-        a.doIt();
-      } else {
-        next();
+      QueryResult<TodoItem> result = event.getResult();
+      try {
+        Iterator<TodoItem> iterator = result.iterator();
+        if (iterator.hasNext()) {
+          TodoItem item = iterator.next();
+          System.out.println("Editing: " + item);
+          System.out.print("Toggle [c]omplete or change [n]ame: ");
+          String s = scan("[cCnN]");
+          Action a = new ActionFactory(dataModel, item).getAction(s);
+          a.doIt();
+        } else {
+          next();
+        }
+      } finally {
+        close(result);
       }
     }
 
     private void handleQueryAll(QueryEndEvent<String, TodoItem> event) {
       // This was a query for all items.
-      for (TodoItem todoItem : event.getData()) {
-        System.out.println(todoItem);
+      QueryResult<TodoItem> result = event.getResult();
+      try {
+        for (TodoItem todoItem : result) {
+          System.out.println(todoItem);
+        }
+        next();
+      } finally {
+        close(result);
       }
-      next();
     }
+
+    private void close(QueryResult<TodoItem> result) {
+      try {
+        result.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
   }
 
   private String scan(String pattern) {
