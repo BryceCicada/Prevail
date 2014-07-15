@@ -6,7 +6,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 group = 'ninja.ugly'
-version = "${prevail_version}"
+version = prevail_version
 ext.artifact = 'prevail'
 
 buildscript {

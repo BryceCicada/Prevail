@@ -16,7 +16,7 @@ repositories {
 }
 
 group = 'ninja.ugly'
-version = '0.2.4-SNAPSHOT'
+version = prevail_version
 ext.artifact = 'android-prevail'
 
 signing {
@@ -62,7 +62,7 @@ android {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:19.+'
-    compile 'ninja.ugly:prevail:' + "${prevail_version}"
+    compile 'ninja.ugly:prevail:' + prevail_version
 }
 
 uploadArchives {
