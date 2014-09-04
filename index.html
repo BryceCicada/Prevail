@@ -81,24 +81,27 @@ Data should be event driven. When stuff changes, you want to know about it. It's
 
 <ol>
 <li>
-<p><strong>Chunk</strong>.  This is the interface to a segment of your data.  You implement this to provide data for your application:  </p>
+<p><strong>Chunk</strong>.  This is the interface to a segment of your data.  </p>
 
 <ul>
+<li>You implement this to provide data for your application.</li>
 <li>It implements the relevant CRUD operations on your data, be it a network resource, a database, a file, etc.<br>
 </li>
 <li>All operations complete synchronously.  That is, they execute on the calling thread and block until completion.  The operations return results directly as method return values.</li>
-<li>It is defined with two generic types, one type is the key by which your data will be accessed, the other type is the value that your Chunk returns.  If you really love <em>ContentProviders</em>, say, then the key could be a <em>Uri</em> and the value could be a <em>Cursor</em>, but these types are completely general and you are free to define the key and value types however you like.  For example, the value could be any type in your domain.  The key could be as simple as an <em>int</em>, or a <em>String</em> containing a simple query language (eg, "all", "one with id 3"), or some much richer type that defines a query perhaps containing filters, ranges or limits.</li>
+<li>It is defined with two generic types, one type is the key by which your data will be accessed, the other type is the value that your Chunk returns.  On Android, if you really love <em>ContentProviders</em>, say, then the key could be a <em>Uri</em> and the value could be a <em>Cursor</em>, but these types are completely general and you are free to define the key and value types however you like.  For example, the value could be any type in your domain.  The key could be as simple as an <em>int</em>, or a <em>String</em> containing a simple query language (eg, "all", "one with id 3"), or some much richer type that defines a query perhaps containing filters, ranges or limits.</li>
 <li>If your data-model has multiple value types, a <em>Chunk</em> is required for each.</li>
 <li>If you want to query the same data with different key types, a <em>Chunk</em> is required for each key type. </li>
 </ul>
 </li>
 <li>
-<p><strong>DataModel</strong>. This contains your <em>Chunks</em>.  <em>Chunks</em> are registered to a <em>DataModel</em>, optionally by name.</p>
+<p><strong>DataModel</strong>. This class is a container for registered <em>Chunks</em>.</p>
 
 <ul>
+<li>
+<em>Chunks</em> are registered to a <em>DataModel</em>, optionally by name.</li>
 <li>Operations are forwarded to a <em>Chunk</em> by name.  Optionally, if no name is provided then the operations are forwarded to all registered <em>Chunks</em> of the appropriate types.</li>
-<li>All operations complete asynchronously.  That is, they do not block the calling thread.  They return their results as events via an <em>EventDispatcher</em>.</li>
-<li>All operations return a <em>Future</em> to their result, just in case you do want to block the calling thread.  This is often useful when the calling thread is already a background thread it's acceptable to block the thread until the operation completes.</li>
+<li>All operations complete asynchronously.  That is, they do not block the calling thread.  They return their results in events via an <em>EventDispatcher</em> (See below).</li>
+<li>All operations return a <em>Future</em> to their result, just in case you do want to block the calling thread.  This is often useful when the calling thread is already in the background and it's acceptable to block until the operation completes.</li>
 </ul>
 </li>
 <li>
@@ -106,12 +109,12 @@ Data should be event driven. When stuff changes, you want to know about it. It's
 
 <ul>
 <li>You implement this to define whatever event distribution mechanism you like.  This could use <em>ContentObservers</em>, if you like Cursors and Uris.  This could send <em>Intents</em> to <em>BroadcastReceivers</em>, which might be useful if your data is accessed from outside of your application.  Most simply, it could just use an event bus, such as that provided by Google's guava library to send POJOs.</li>
-<li>Whilst Prevail needs an implementation of <em>EventDispatcher</em> to distribute the results of <em>Chunk</em> operations, the receipt of these results is completely independent of Prevail.  If you use Intents, the register BroadcastRecievers as normal.  If you use an event bus, then subscribe to the events as normal.</li>
+<li>Whilst Prevail needs an implementation of <em>EventDispatcher</em> to distribute the results of <em>Chunk</em> operations, the receipt of these results is completely independent of Prevail.  If you use Intents, the register <em>BroadcastRecievers</em> as normal.  If you use an event bus, then subscribe to the events as normal.</li>
 <li>All event dispatching should complete asynchronously.</li>
 </ul>
 </li>
 <li>
-<p><strong>EventFactory</strong>.  This produces the required events for distrubution with the <em>EventDispatcher</em>.</p>
+<p><strong>EventFactory</strong>.  This is the interface used to produce the required events for distrubution with the <em>EventDispatcher</em>.</p>
 
 <ul>
 <li>You define events for one or more of the start, end, progress and error from <em>Chunk</em> operations.</li>
