@@ -108,7 +108,7 @@ Data should be event driven. When stuff changes, you want to know about it. It's
 
 <ul>
 <li>You implement this to define whatever event distribution mechanism you like.  On Android, this could use ContentObservers, if you like Cursors and Uris.  This could send Intents to BroadcastReceivers, which might be useful if your data is accessed from outside of your application.  Most simply, it could just use an event bus, such as that provided by Google's guava library to send POJOs.</li>
-<li>Whilst Prevail needs an implementation of <a href="javadoc/0.2.4/base/ninja/ugly/prevail/event/dispatcher/EventDispatcher.html">EventDispatcher</a> to distribute the results of <a href="javadoc/0.2.4/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> operations, the receipt of these results is completely independent of Prevail.  If you use Intents, the register BroadcastRecievers as normal.  If you use an event bus, then subscribe to the events as normal.</li>
+<li>Whilst Prevail needs an implementation of <a href="javadoc/0.2.4/base/ninja/ugly/prevail/event/dispatcher/EventDispatcher.html">EventDispatcher</a> to distribute the results of <a href="javadoc/0.2.4/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> operations, the receipt of these results is completely independent of Prevail.  If you use Intents, then register BroadcastRecievers as normal.  If you use an event bus, then subscribe to the events as normal.</li>
 <li>All event dispatching should complete asynchronously.</li>
 </ul>
 </li>
