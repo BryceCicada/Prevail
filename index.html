@@ -72,7 +72,7 @@ Data should be event driven. When stuff changes, you want to know about it. It's
 </ul><p>In particular, on Android:</p>
 
 <ul>
-<li>Many people use ContentProviders for data simply because they give easy access to a certain type of data abstraction, however this can easily contaminate your application with Cursors, Uris, ContentObservers and CursorLoaders. It's frustrating to have code that depends on these classes, when they should really never penetrate into the application's domain. It's much nicer to have all the good stuff, like asynchronous loading and notification of change, within your own classes in your own domain.</li>
+<li>Many people use ContentProviders for data because they give a limited amount of data abstraction, however this can easily contaminate your application with Cursors, Uris, ContentObservers and CursorLoaders. It's frustrating to have code that depends on these classes, when they should really never penetrate into the application's domain. It's much nicer to have all the good stuff, like asynchronous loading and notification of change, within your own classes in your own domain.</li>
 <li>What happens when you realise that all the stuff you've been persisting to SharedPreferences needs to be in a database so that you can access it with a richer query language? In that case, client code shouldn't have to change.  Want to expirement with a NoSQL database, no problem... client code will not care.</li>
 </ul><h2>
 <a name="concepts" class="anchor" href="#concepts"><span class="octicon octicon-link"></span></a>Concepts:</h2>
