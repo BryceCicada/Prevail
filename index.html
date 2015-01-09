@@ -149,7 +149,7 @@ Data should be event driven. When stuff changes, you want to know about it. It's
 
 <ul>
 <li>Remove launcher icon from android library.</li>
-<li>Close method on Chunk interface to free up resources.  Close method on DataModel that forwards to registered Chunks.</li>
+<li>Close method on Chunk interface to free up resources.  Close method on DataModel that forwards to registered Chunks on the chunks own executor so that closing doesn't interleave with ongoing operations.</li>
 <li>Common event classes for network and database Chunks.</li>
 <li>Batch update operations and/or transactions.</li>
 <li>Improved main library javadoc.</li>
