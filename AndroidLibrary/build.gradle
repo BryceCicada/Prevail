@@ -1,13 +1,13 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 buildscript {
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.+'
+        classpath 'com.android.tools.build:gradle:1.0.1+'
     }
 }
 
@@ -16,7 +16,7 @@ repositories {
 }
 
 group = 'ninja.ugly'
-version = prevail_version
+version = project.prevailVersion
 ext.artifact = 'android-prevail'
 
 signing {
@@ -43,10 +43,9 @@ artifacts {
 }
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.1.0'
+    compileSdkVersion 21
+    buildToolsVersion '21.1.2'
     defaultConfig {
-        applicationId 'ninja.ugly.prevail'
         minSdkVersion 15
         targetSdkVersion 19
         versionCode 1
@@ -54,7 +53,7 @@ android {
     }
     buildTypes {
         release {
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -62,7 +61,7 @@ android {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:19.+'
-    compile 'ninja.ugly:prevail:' + prevail_version
+    compile 'ninja.ugly:prevail:' + project.prevailVersion
 }
 
 uploadArchives {
@@ -75,7 +74,7 @@ uploadArchives {
             ext.repoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 
         repository(url: repoUrl) {
-            authentication(userName: "${sonatype_username}", password: "${sonatype_password}")
+//            authentication(userName: "${sonatype_username}", password: "${sonatype_password}")
         }
 
         pom.artifactId = project.ext.artifact

@@ -6,7 +6,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 group = 'ninja.ugly'
-version = prevail_version
+version = project.prevailVersion
 ext.artifact = 'prevail'
 
 buildscript {
@@ -45,7 +45,7 @@ uploadArchives {
             ext.repoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 
         repository(url: repoUrl) {
-            authentication(userName: "${sonatype_username}", password: "${sonatype_password}")
+//            authentication(userName: "${sonatype_username}", password: "${sonatype_password}")
         }
 
         pom.artifactId = project.ext.artifact
@@ -99,16 +99,16 @@ dependencies {
     }
 }
 
-sonarRunner {
-    sonarProperties {
-        property "sonar.host.url", "http://localhost:9000"
-        property "sonar.jdbc.url", "jdbc:h2:tcp://localhost:9092/sonar"
-        property "sonar.jdbc.driverClassName", "org.h2.Driver"
-        property "sonar.jdbc.username", "sonar"
-        property "sonar.jdbc.password", "sonar"
-        property "sonar.branch", "gradle"
-        property "sonar.dynamicAnalysis", "reuseReports"
-        property "sonar.junit.reportsPath", "build/test-results/"
-        property "sonar.pitest.reportsDirectory", "build/reports/pitest/"
-    }
-}
+//sonarRunner {
+//    sonarProperties {
+//        property "sonar.host.url", "http://localhost:9000"
+//        property "sonar.jdbc.url", "jdbc:h2:tcp://localhost:9092/sonar"
+//        property "sonar.jdbc.driverClassName", "org.h2.Driver"
+//        property "sonar.jdbc.username", "sonar"
+//        property "sonar.jdbc.password", "sonar"
+//        property "sonar.branch", "gradle"
+//        property "sonar.dynamicAnalysis", "reuseReports"
+//        property "sonar.junit.reportsPath", "build/test-results/"
+//        property "sonar.pitest.reportsDirectory", "build/reports/pitest/"
+//    }
+//}
