@@ -1,5 +1,4 @@
 language: android
 
 script:
-  - ./gradlew clean :Library:test :AndroidLibrary:connectedCheck
-  -Psonatype_username='' -Psonatype_password=''
+  - ./gradlew clean :Library:test :AndroidLibrary:connectedCheck -Psonatype_username='' -Psonatype_password=''
