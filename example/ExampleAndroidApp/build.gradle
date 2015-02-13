@@ -39,6 +39,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:19.+'
     compile 'com.google.guava:guava:16.0.1'
     compile 'nl.qbusict:cupboard:2.0.1'
-    compile 'ninja.ugly:android-prevail:0.2.4+@aar'
-    compile 'ninja.ugly:prevail:0.2.4+'
+    compile project(':AndroidLibrary')
 }

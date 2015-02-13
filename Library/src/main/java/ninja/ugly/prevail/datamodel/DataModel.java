@@ -2,11 +2,14 @@ package ninja.ugly.prevail.datamodel;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,10 +37,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * registered on a DataModel they can be accessed asynchronously.  Chunks are registered on the DataModel
  * with an optional 'segment', that is a key that addresses possibly many Chunks.
  */
-public class DataModel {
+public class DataModel implements Closeable {
   private static final String NO_SEGMENT = "NO SEGMENT";
   private static final ExecutorService DEFAULT_CHUNK_EXECUTOR = Executors.newSingleThreadExecutor();
-  private Map<String, List<ChunkAndExecutor>> mChunks = new HashMap<String, List<ChunkAndExecutor>>();
+  private final Map<String, List<ChunkAndExecutor>> mChunks = new HashMap<>();
 
   /**
    * Add a Chunk to the default segment of this DataModel.
@@ -318,6 +321,37 @@ public class DataModel {
       }
     }
     return l;
+  }
+
+  /** Close all registered chunks */
+  @Override
+  public void close() throws CompositeIOException {
+    synchronized (mChunks) {
+      List<IOException> exceptions = Lists.newArrayList();
+      for (ChunkAndExecutor chunkAndExecutor : Iterables.concat(mChunks.values())) {
+        try {
+          chunkAndExecutor.getChunk().close();
+        } catch (IOException e) {
+          exceptions.add(e);
+        }
+      }
+
+      if (!exceptions.isEmpty()) {
+        throw new CompositeIOException(exceptions);
+      }
+    }
+  }
+
+  public class CompositeIOException extends IOException {
+    private final List<IOException> mExceptions;
+
+    public CompositeIOException(List<IOException> exceptions) {
+      mExceptions = exceptions;
+    }
+
+    public List<IOException> getExceptions() {
+      return mExceptions;
+    }
   }
 
   private static final class ChunkAndExecutor {

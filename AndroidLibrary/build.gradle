@@ -7,7 +7,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.1+'
+        classpath 'com.android.tools.build:gradle:1.0.1'
     }
 }
 
@@ -61,7 +61,7 @@ android {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:19.+'
-    compile 'ninja.ugly:prevail:0.2.4'
+    compile project(':Library')
 }
 
 uploadArchives {

@@ -11,7 +11,10 @@ import ninja.ugly.prevail.exception.InsertException;
 import ninja.ugly.prevail.exception.QueryException;
 import ninja.ugly.prevail.exception.UpdateException;
 
-public interface Chunk<K, V> {
+import java.io.Closeable;
+import java.io.IOException;
+
+public interface Chunk<K, V> extends Closeable {
   /**
    * Insert a value into this Chunk, returning the key at which the get can be retrieved later.
    *
@@ -139,6 +142,11 @@ public interface Chunk<K, V> {
 
     @Override
     public void addEventFactory(final DeleteEventFactory deleteEventFactory) {
+      // Empty implementation
+    }
+
+    @Override
+    public void close() throws IOException {
       // Empty implementation
     }
   }

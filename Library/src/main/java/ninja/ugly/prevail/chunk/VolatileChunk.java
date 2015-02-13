@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -67,9 +68,9 @@ public class VolatileChunk<K, V> extends DefaultChunk<K, V> {
   protected QueryResult<V> doQuery(final K key, final OnProgressUpdateListener onProgressUpdateListener) throws QueryException {
     final QueryResult<V> result;
     if (mMap.containsKey(key)) {
-      result = new QueryResult.SingletonQueryResult<V>(mMap.get(key));
+      result = new QueryResult.SingletonQueryResult<>(mMap.get(key));
     } else {
-      result = new QueryResult.EmptyQueryResult<V>();
+      result = new QueryResult.EmptyQueryResult<>();
     }
     return result;
   }
@@ -119,6 +120,11 @@ public class VolatileChunk<K, V> extends DefaultChunk<K, V> {
    */
   protected Collection<V> getValues() {
     return Collections.unmodifiableCollection(mMap.values());
+  }
+
+  @Override
+  public void close() throws IOException {
+    mMap.clear();
   }
 
   /**

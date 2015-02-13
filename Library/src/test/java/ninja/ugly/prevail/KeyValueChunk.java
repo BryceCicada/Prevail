@@ -7,6 +7,8 @@ import ninja.ugly.prevail.exception.InsertException;
 import ninja.ugly.prevail.exception.QueryException;
 import ninja.ugly.prevail.exception.UpdateException;
 
+import java.io.IOException;
+
 public class KeyValueChunk<K, V> extends DefaultChunk<K, V> {
   private final Inserter<K, V> mInserter;
   private final Updater<K, V> mUpdater;
@@ -54,5 +56,10 @@ public class KeyValueChunk<K, V> extends DefaultChunk<K, V> {
 
   public interface Deleter<K> {
     int delete(K key, OnProgressUpdateListener onProgressUpdateListener) throws DeleteException;
+  }
+
+  @Override
+  public void close() throws IOException {
+    // Do nothing.
   }
 }

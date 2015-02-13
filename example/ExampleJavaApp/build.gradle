@@ -12,6 +12,6 @@ repositories {
 }
 
 dependencies {
-    compile 'ninja.ugly:prevail:0.2.4+'
+    compile project (':Library')
     testCompile 'junit:junit:4.11'
 }
