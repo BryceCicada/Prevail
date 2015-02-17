@@ -90,6 +90,11 @@ public class DatabaseChunk extends DefaultChunk<String, TodoItem> {
     mDatabase = DatabaseHelper.get(context).getWritableDatabase();
   }
 
+  @Override
+  public void close() throws IOException {
+    mDatabase.close();
+  }
+
   private static class CupboardQueryResult<T> implements QueryResult<T> {
     private QueryResultIterable<T> mItems;
     private boolean mClosed = false;
