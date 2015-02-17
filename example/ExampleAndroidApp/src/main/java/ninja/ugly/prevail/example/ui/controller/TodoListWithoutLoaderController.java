@@ -2,18 +2,16 @@ package ninja.ugly.prevail.example.ui.controller;
 
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import com.google.common.collect.Iterables;
 import com.google.common.eventbus.Subscribe;
+import ninja.ugly.prevail.chunk.QueryResult;
+import ninja.ugly.prevail.event.DatabaseDeleteEndEvent;
+import ninja.ugly.prevail.event.DatabaseInsertEndEvent;
+import ninja.ugly.prevail.event.DatabaseQueryEndEvent;
+import ninja.ugly.prevail.example.model.domain.TodoItem;
 
 import java.io.IOException;
 import java.util.Arrays;
-
-import ninja.ugly.prevail.chunk.QueryResult;
-import ninja.ugly.prevail.event.DeleteEndEvent;
-import ninja.ugly.prevail.event.InsertEndEvent;
-import ninja.ugly.prevail.event.QueryEndEvent;
-import ninja.ugly.prevail.example.model.domain.TodoItem;
 
 public class TodoListWithoutLoaderController extends TodoListController {
 
@@ -31,7 +29,7 @@ public class TodoListWithoutLoaderController extends TodoListController {
   }
 
   @Subscribe
-  public void queryEnd(QueryEndEvent event) throws IOException {
+  public void queryEnd(DatabaseQueryEndEvent event) throws IOException {
     getItems().clear();
     QueryResult<? extends TodoItem> results = event.getResult();
     getItems().addAll(Arrays.asList(Iterables.toArray(results, TodoItem.class)));
@@ -46,12 +44,12 @@ public class TodoListWithoutLoaderController extends TodoListController {
   }
 
   @Subscribe
-  public void deleteEnd(DeleteEndEvent event) {
+  public void deleteEnd(DatabaseDeleteEndEvent event) {
     requery();
   }
 
   @Subscribe
-  public void insertEnd(InsertEndEvent event) {
+  public void insertEnd(DatabaseInsertEndEvent event) {
     setInserting(true);
     requery();
   }

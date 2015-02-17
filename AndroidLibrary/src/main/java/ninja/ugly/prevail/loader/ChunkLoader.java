@@ -5,17 +5,15 @@ import android.content.Context;
 import android.os.CancellationSignal;
 import android.os.OperationCanceledException;
 import android.util.Log;
-
 import com.google.common.base.Optional;
+import ninja.ugly.prevail.chunk.QueryResult;
+import ninja.ugly.prevail.datamodel.DataModel;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import ninja.ugly.prevail.chunk.QueryResult;
-import ninja.ugly.prevail.datamodel.DataModel;
 
 public abstract class ChunkLoader<K, V> extends AsyncTaskLoader<QueryResult<V>> {
 

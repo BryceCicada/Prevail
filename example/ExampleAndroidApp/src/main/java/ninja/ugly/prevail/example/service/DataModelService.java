@@ -4,10 +4,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-
 import android.util.Log;
 import com.google.common.eventbus.EventBus;
-
 import ninja.ugly.prevail.chunk.Chunk;
 import ninja.ugly.prevail.datamodel.DataModel;
 import ninja.ugly.prevail.event.dispatcher.EventBusEventDispatcher;

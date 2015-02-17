@@ -9,14 +9,8 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
-
 import ninja.ugly.prevail.example.R;
-import ninja.ugly.prevail.example.ui.controller.AddButtonController;
-import ninja.ugly.prevail.example.ui.controller.AddEditTextController;
-import ninja.ugly.prevail.example.ui.controller.Controller;
-import ninja.ugly.prevail.example.ui.controller.TodoListController;
-import ninja.ugly.prevail.example.ui.controller.TodoListWithLoaderController;
-import ninja.ugly.prevail.example.ui.controller.TodoListWithoutLoaderController;
+import ninja.ugly.prevail.example.ui.controller.*;
 
 public class TodoListFragment extends Fragment {
 

@@ -5,7 +5,6 @@ import android.preference.PreferenceFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import ninja.ugly.prevail.example.R;
 
 public class AboutFragment extends PreferenceFragment {

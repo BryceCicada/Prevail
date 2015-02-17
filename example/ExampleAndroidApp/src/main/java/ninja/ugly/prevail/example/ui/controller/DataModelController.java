@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-
 import ninja.ugly.prevail.example.service.DataModelService;
 
 import static com.google.common.base.Preconditions.checkNotNull;

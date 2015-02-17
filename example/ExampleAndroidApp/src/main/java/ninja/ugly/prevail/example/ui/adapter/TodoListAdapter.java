@@ -7,11 +7,10 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-
-import java.util.List;
-
 import ninja.ugly.prevail.example.R;
 import ninja.ugly.prevail.example.model.domain.TodoItem;
+
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

@@ -6,7 +6,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import ninja.ugly.prevail.example.model.domain.TodoItem;
 
 import static com.google.common.base.Preconditions.checkNotNull;
