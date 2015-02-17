@@ -2,15 +2,15 @@ package ninja.ugly.prevail.event;
 
 public class QueryExceptionEvent<K> implements QueryEvent, ExceptionEvent {
   private final K mKey;
-  private final Exception mExeption;
+  private final Exception mException;
 
-  public QueryExceptionEvent(K key, Exception exeption) {
+  public QueryExceptionEvent(K key, Exception exception) {
     mKey = key;
-    mExeption = exeption;
+    mException = exception;
   }
 
-  public Exception getExeption() {
-    return mExeption;
+  public Exception getException() {
+    return mException;
   }
 
   public K getKey() {

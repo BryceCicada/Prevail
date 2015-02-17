@@ -2,15 +2,15 @@ package ninja.ugly.prevail.event;
 
 public class DeleteExceptionEvent<K> implements DeleteEvent, DataChangeExceptionEvent {
   private final K mKey;
-  private final Exception mExeption;
+  private final Exception mException;
 
-  public DeleteExceptionEvent(K key, Exception exeption) {
+  public DeleteExceptionEvent(K key, Exception exception) {
     mKey = key;
-    mExeption = exeption;
+    mException = exception;
   }
 
-  public Exception getExeption() {
-    return mExeption;
+  public Exception getException() {
+    return mException;
   }
 
   public K getKey() {

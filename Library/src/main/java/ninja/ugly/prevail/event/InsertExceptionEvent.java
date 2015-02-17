@@ -2,15 +2,15 @@ package ninja.ugly.prevail.event;
 
 public class InsertExceptionEvent<V> implements InsertEvent, DataChangeExceptionEvent {
   private final V mValue;
-  private final Exception mExeption;
+  private final Exception mException;
 
-  public InsertExceptionEvent(V value, Exception exeption) {
+  public InsertExceptionEvent(V value, Exception exception) {
     mValue = value;
-    mExeption = exeption;
+    mException = exception;
   }
 
-  public Exception getExeption() {
-    return mExeption;
+  public Exception getException() {
+    return mException;
   }
 
   public V getValue() {
