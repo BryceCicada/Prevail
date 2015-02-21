@@ -1,4 +1,4 @@
 package ninja.ugly.prevail.event;
 
-public interface DataChangeEvent {
+public interface DataChangeEvent extends Event {
 }

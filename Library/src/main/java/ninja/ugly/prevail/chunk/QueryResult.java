@@ -21,7 +21,7 @@ public interface QueryResult<V> extends Iterable<V>, Closeable {
 
   /**
    * Returns if this QueryResult is already closed.
-   * @return
+   * @return a boolean true if this query result is close, false otherwise
    */
   boolean isClosed();
 
@@ -47,7 +47,7 @@ public interface QueryResult<V> extends Iterable<V>, Closeable {
 
     /**
      * Returns an empty iterator.
-     * @return
+     * @return An iterator over this QueryResult, containing no elements.
      */
     @Override
     public Iterator<V> iterator() {
@@ -74,7 +74,7 @@ public interface QueryResult<V> extends Iterable<V>, Closeable {
      * <p>
      * This implementation cannot be closed, ie calls to close() do nothing and
      * calls to isClosed() always return false.
-     * @return
+     * @return An iterator over this QueryResult, containing a single element.
      */
     @Override
     public Iterator<V> iterator() {

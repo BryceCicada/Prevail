@@ -6,17 +6,17 @@ import android.content.Loader;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import com.google.common.collect.Iterables;
 import com.google.common.eventbus.Subscribe;
-
-import java.util.Arrays;
-
 import ninja.ugly.prevail.chunk.QueryResult;
 import ninja.ugly.prevail.datamodel.DataModel;
 import ninja.ugly.prevail.event.DataChangeEvent;
 import ninja.ugly.prevail.example.model.domain.TodoItem;
 import ninja.ugly.prevail.loader.ChunkLoader;
+
+import java.util.Arrays;
+
+import static ninja.ugly.prevail.example.ui.controller.DataModelController.DataModelServiceConnectionListener.*;
 
 public class TodoListWithLoaderController extends TodoListController implements LoaderManager.LoaderCallbacks<QueryResult<TodoItem>> {
 
@@ -25,10 +25,9 @@ public class TodoListWithLoaderController extends TodoListController implements 
   public TodoListWithLoaderController(final ListView listView, final LoaderManager loaderManager) {
     super(listView);
     mContext = listView.getContext();
-    setConnectionListener(new DataModelServiceConnectionListenerDecorator(getConnectionListener()) {
+    decorateConnectionListener(new EmptyDataModelServiceConnectionListener() {
       @Override
       public void onDataModelServiceConnected() {
-        getDecoratedListener().onDataModelServiceConnected();
         loaderManager.initLoader(0, null, TodoListWithLoaderController.this);
       }
     });

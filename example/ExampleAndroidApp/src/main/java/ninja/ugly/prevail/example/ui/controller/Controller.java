@@ -1,5 +1,7 @@
 package ninja.ugly.prevail.example.ui.controller;
 
+import android.os.Bundle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,7 @@ public interface Controller {
     public void onStop() {
       // Do nothing
     }
+
   }
 
   public class CompositeController implements Controller {
@@ -28,6 +31,10 @@ public interface Controller {
 
     public void addComponent(Controller component) {
       mComponents.add(component);
+    }
+
+    public void clear() {
+      mComponents.clear();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package ninja.ugly.prevail.example.ui.controller;
 
+import android.content.Context;
 import android.view.View;
 
 public abstract class DataModelViewController extends DataModelController {
@@ -10,7 +11,7 @@ public abstract class DataModelViewController extends DataModelController {
     mView = button;
     mView.setEnabled(false);
 
-    setConnectionListener(new DataModelServiceConnectionListener() {
+    decorateConnectionListener(new DataModelServiceConnectionListener() {
       @Override
       public void onDataModelServiceConnected() {
         mView.setEnabled(true);

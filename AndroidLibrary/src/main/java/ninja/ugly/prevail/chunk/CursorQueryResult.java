@@ -5,7 +5,6 @@ import android.content.Entity;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.RemoteException;
-
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 

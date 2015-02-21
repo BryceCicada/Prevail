@@ -4,9 +4,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-
+import android.util.Log;
 import com.google.common.eventbus.EventBus;
-
 import ninja.ugly.prevail.chunk.Chunk;
 import ninja.ugly.prevail.datamodel.DataModel;
 import ninja.ugly.prevail.event.dispatcher.EventBusEventDispatcher;
@@ -19,7 +18,11 @@ import ninja.ugly.prevail.example.model.database.DatabaseChunk;
 import ninja.ugly.prevail.example.model.domain.TodoItem;
 import ninja.ugly.prevail.executor.MainThreadExecutor;
 
+import java.io.IOException;
+
 public class DataModelService extends Service {
+
+  private static final String TAG = DataModelService.class.getSimpleName();
 
   final EventDispatcher mEventDispatcher;
   final DataModel mDataModel;
@@ -59,6 +62,16 @@ public class DataModelService extends Service {
 
     // Register the Chunk on the DataModel.
     mDataModel.addChunk(chunk);
+  }
+
+  @Override
+  public void onDestroy() {
+    try {
+      mDataModel.close();
+    } catch (IOException e) {
+      Log.e(TAG, "IOException closing datamodel", e);
+    }
+    super.onDestroy();
   }
 
   public EventDispatcher getEventDispatcher() {
