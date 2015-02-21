@@ -36,7 +36,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:19.+'
+    compile 'com.android.support:appcompat-v7:19.1.0'
     compile 'com.google.guava:guava:16.0.1'
     compile 'nl.qbusict:cupboard:2.0.1'
     compile project(':AndroidLibrary')
