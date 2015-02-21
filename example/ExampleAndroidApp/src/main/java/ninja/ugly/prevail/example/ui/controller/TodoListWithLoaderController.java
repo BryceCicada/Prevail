@@ -16,6 +16,8 @@ import ninja.ugly.prevail.loader.ChunkLoader;
 
 import java.util.Arrays;
 
+import static ninja.ugly.prevail.example.ui.controller.DataModelController.DataModelServiceConnectionListener.*;
+
 public class TodoListWithLoaderController extends TodoListController implements LoaderManager.LoaderCallbacks<QueryResult<TodoItem>> {
 
   private final Context mContext;
@@ -23,10 +25,9 @@ public class TodoListWithLoaderController extends TodoListController implements 
   public TodoListWithLoaderController(final ListView listView, final LoaderManager loaderManager) {
     super(listView);
     mContext = listView.getContext();
-    setConnectionListener(new DataModelServiceConnectionListenerDecorator(getConnectionListener()) {
+    decorateConnectionListener(new EmptyDataModelServiceConnectionListener() {
       @Override
       public void onDataModelServiceConnected() {
-        getDecoratedListener().onDataModelServiceConnected();
         loaderManager.initLoader(0, null, TodoListWithLoaderController.this);
       }
     });

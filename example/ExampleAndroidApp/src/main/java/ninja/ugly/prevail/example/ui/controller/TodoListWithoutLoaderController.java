@@ -13,16 +13,17 @@ import ninja.ugly.prevail.example.model.domain.TodoItem;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static ninja.ugly.prevail.example.ui.controller.DataModelController.DataModelServiceConnectionListener.*;
+
 public class TodoListWithoutLoaderController extends TodoListController {
 
   private boolean mInserting = false;
 
   public TodoListWithoutLoaderController(final ListView listView) {
     super(listView);
-    setConnectionListener(new DataModelServiceConnectionListenerDecorator(getConnectionListener()) {
+    decorateConnectionListener(new EmptyDataModelServiceConnectionListener() {
       @Override
       public void onDataModelServiceConnected() {
-        getDecoratedListener().onDataModelServiceConnected();
         requery();
       }
     });

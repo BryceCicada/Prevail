@@ -46,15 +46,21 @@ public class TodoListFragment extends Fragment {
   }
 
   @Override
-  public void onResume() {
-    super.onResume();
+  public void onDestroyView() {
+    mCompositeController.clear();
+    super.onDestroyView();
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
     mCompositeController.onStart();
   }
 
 
   @Override
-  public void onPause() {
+  public void onStop() {
     mCompositeController.onStop();
-    super.onPause();
+    super.onStop();
   }
 }
