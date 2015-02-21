@@ -40,7 +40,7 @@
 <h2>
 <a id="latest-release" class="anchor" href="#latest-release" aria-hidden="true"><span class="octicon octicon-link"></span></a>Latest Release:</h2>
 
-<p>Boreas 0.2.4 - <a href="javadoc/0.2.4/base/index.html">Javadoc</a></p>
+<p>Boreas 0.2.5 - <a href="javadoc/0.2.5/base/index.html">Javadoc</a></p>
 
 <h3>
 <a id="gradle-usage" class="anchor" href="#gradle-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Gradle Usage</h3>
@@ -50,13 +50,14 @@
 <p>Import the java library with:</p>
 
 <p><code>dependencies {
-    compile 'ninja.ugly:prevail:0.2.4'
+    compile 'ninja.ugly:prevail:0.2.5'
 }</code></p>
 
 <p>Alternatively, Android developers can import the Android library directly with just</p>
 
 <p><code>dependencies {
-    compile 'ninja.ugly:android-prevail:0.2.4'
+    compile 'ninja.ugly:prevail:0.2.5'
+    compile 'ninja.ugly:android-prevail:0.2.5'
 }</code></p>
 
 <h2>
@@ -85,43 +86,43 @@ Data should be event driven. When stuff changes, you want to know about it. It's
 
 <ol>
 <li>
-<p><a href="javadoc/0.2.4/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a>.  This is the interface to a segment of your data.  </p>
+<p><a href="javadoc/0.2.5/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a>.  This is the interface to a segment of your data.  </p>
 
 <ul>
 <li>You implement this to provide data for your application.</li>
 <li>It implements the relevant CRUD operations on your data, be it a network resource, a database, a file, etc.<br>
 </li>
 <li>All operations complete synchronously.  That is, they execute on the calling thread and block until completion.  The operations return results directly as method return values.</li>
-<li>It is defined with two generic types, one type is the key by which your data will be accessed, the other type is the value that your <a href="javadoc/0.2.4/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> returns.  On Android, if you really love ContentProviders, say, then the key could be a Uri and the value could be a Cursor, but these types are completely general and you are free to define the key and value types however you like.  For example, the value could be any type in your domain.  The key could be as simple as an Integer containing a resource id, or else a String containing a simple query language (eg, "all", "one with id 3"), or some much richer type that defines a query perhaps containing filters, ranges or limits.</li>
-<li>If your data-model has multiple value types, a <a href="javadoc/0.2.4/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> is required for each.</li>
-<li>If you want to query the same data with different key types, a <a href="javadoc/0.2.4/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> is required for each key type. </li>
+<li>It is defined with two generic types, one type is the key by which your data will be accessed, the other type is the value that your <a href="javadoc/0.2.5/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> returns.  On Android, if you really love ContentProviders, say, then the key could be a Uri and the value could be a Cursor, but these types are completely general and you are free to define the key and value types however you like.  For example, the value could be any type in your domain.  The key could be as simple as an Integer containing a resource id, or else a String containing a simple query language (eg, "all", "one with id 3"), or some much richer type that defines a query perhaps containing filters, ranges or limits.</li>
+<li>If your data-model has multiple value types, a <a href="javadoc/0.2.5/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> is required for each.</li>
+<li>If you want to query the same data with different key types, a <a href="javadoc/0.2.5/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> is required for each key type. </li>
 </ul>
 </li>
 <li>
-<p><a href="javadoc/0.2.4/base/ninja/ugly/prevail/datamodel/DataModel.html">DataModel</a>. This class is a container for registered <a href="javadoc/0.2.4/base/ninja/ugly/prevail/chunk/Chunk.html">Chunks</a>.</p>
+<p><a href="javadoc/0.2.5/base/ninja/ugly/prevail/datamodel/DataModel.html">DataModel</a>. This class is a container for registered <a href="javadoc/0.2.5/base/ninja/ugly/prevail/chunk/Chunk.html">Chunks</a>.</p>
 
 <ul>
-<li>Each <a href="javadoc/0.2.4/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> is registered to a <a href="javadoc/0.2.4/base/ninja/ugly/prevail/datamodel/DataModel.html">DataModel</a>, optionally by name.</li>
-<li>Operations are forwarded to a <a href="javadoc/0.2.4/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> by name.  Optionally, if no name is provided then the operations are forwarded to all registered <a href="javadoc/0.2.4/base/ninja/ugly/prevail/chunk/Chunk.html">Chunks</a> of the appropriate types.</li>
-<li>All operations complete asynchronously.  That is, they do not block the calling thread.  They return their results in events via an <a href="javadoc/0.2.4/base/ninja/ugly/prevail/event/dispatcher/EventDispatcher.html">EventDispatcher</a> (See below).</li>
+<li>Each <a href="javadoc/0.2.5/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> is registered to a <a href="javadoc/0.2.5/base/ninja/ugly/prevail/datamodel/DataModel.html">DataModel</a>, optionally by name.</li>
+<li>Operations are forwarded to a <a href="javadoc/0.2.5/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> by name.  Optionally, if no name is provided then the operations are forwarded to all registered <a href="javadoc/0.2.5/base/ninja/ugly/prevail/chunk/Chunk.html">Chunks</a> of the appropriate types.</li>
+<li>All operations complete asynchronously.  That is, they do not block the calling thread.  They return their results in events via an <a href="javadoc/0.2.5/base/ninja/ugly/prevail/event/dispatcher/EventDispatcher.html">EventDispatcher</a> (See below).</li>
 <li>All operations return a Future to their result, just in case you do want to block the calling thread.  This is often useful when the calling thread is already in the background and it's acceptable to block until the operation completes.</li>
 </ul>
 </li>
 <li>
-<p><a href="javadoc/0.2.4/base/ninja/ugly/prevail/event/dispatcher/EventDispatcher.html">EventDispatcher</a>.  This is the interface used to return the results of <a href="javadoc/0.2.4/base/ninja/ugly/prevail/datamodel/DataModel.html">DataModel</a> operations asynchronously.  </p>
+<p><a href="javadoc/0.2.5/base/ninja/ugly/prevail/event/dispatcher/EventDispatcher.html">EventDispatcher</a>.  This is the interface used to return the results of <a href="javadoc/0.2.5/base/ninja/ugly/prevail/datamodel/DataModel.html">DataModel</a> operations asynchronously.  </p>
 
 <ul>
 <li>You implement this to define whatever event distribution mechanism you like.  On Android, this could use ContentObservers, if you like Cursors and Uris.  This could send Intents to BroadcastReceivers, which might be useful if your data is accessed from outside of your application.  Most simply, it could just use an event bus, such as that provided by Google's guava library to send POJOs.</li>
-<li>Whilst Prevail needs an implementation of <a href="javadoc/0.2.4/base/ninja/ugly/prevail/event/dispatcher/EventDispatcher.html">EventDispatcher</a> to distribute the results of <a href="javadoc/0.2.4/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> operations, the receipt of these results is completely independent of Prevail.  If you use Intents, then register BroadcastRecievers as normal.  If you use an event bus, then subscribe to the events as normal.</li>
+<li>Whilst Prevail needs an implementation of <a href="javadoc/0.2.5/base/ninja/ugly/prevail/event/dispatcher/EventDispatcher.html">EventDispatcher</a> to distribute the results of <a href="javadoc/0.2.5/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> operations, the receipt of these results is completely independent of Prevail.  If you use Intents, then register BroadcastRecievers as normal.  If you use an event bus, then subscribe to the events as normal.</li>
 <li>All event dispatching should complete asynchronously.</li>
 </ul>
 </li>
 <li>
-<p><a href="javadoc/0.2.4/base/ninja/ugly/prevail/event/factory/EventFactory.html">EventFactory</a>.  This is the interface used to produce the required events for distrubution with the <a href="javadoc/0.2.4/base/ninja/ugly/prevail/event/dispatcher/EventDispatcher.html">EventDispatcher</a>.</p>
+<p><a href="javadoc/0.2.5/base/ninja/ugly/prevail/event/factory/EventFactory.html">EventFactory</a>.  This is the interface used to produce the required events for distrubution with the <a href="javadoc/0.2.5/base/ninja/ugly/prevail/event/dispatcher/EventDispatcher.html">EventDispatcher</a>.</p>
 
 <ul>
-<li>You define events for one or more of the start, end, progress and error from <a href="javadoc/0.2.4/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> operations.</li>
-<li>These can be set globally on the Chunk, one for each CRUD operation, to distribute events from any such operation.  Alternatively, an <a href="javadoc/0.2.4/base/ninja/ugly/prevail/event/factory/EventFactory.html">EventFactory</a> can be passed into each <a href="javadoc/0.2.4/base/ninja/ugly/prevail/datamodel/DataModel.html">DataModel</a> operation in order to generate one off, bespoke, events for that operation.</li>
+<li>You define events for one or more of the start, end, progress and error from <a href="javadoc/0.2.5/base/ninja/ugly/prevail/chunk/Chunk.html">Chunk</a> operations.</li>
+<li>These can be set globally on the Chunk, one for each CRUD operation, to distribute events from any such operation.  Alternatively, an <a href="javadoc/0.2.5/base/ninja/ugly/prevail/event/factory/EventFactory.html">EventFactory</a> can be passed into each <a href="javadoc/0.2.5/base/ninja/ugly/prevail/datamodel/DataModel.html">DataModel</a> operation in order to generate one off, bespoke, events for that operation.</li>
 </ul>
 </li>
 </ol>
@@ -150,10 +151,6 @@ Data should be event driven. When stuff changes, you want to know about it. It's
 <p>Things to do before release of 1.0:</p>
 
 <ul>
-<li>Remove launcher icon from android library.</li>
-<li>Remove the app_name from resources.</li>
-<li>Close method on Chunk interface to free up resources.  Close method on DataModel that forwards to registered Chunks on the chunks own executor so that closing doesn't interleave with ongoing operations.</li>
-<li>Common event classes for network and database Chunks.</li>
 <li>Batch update operations and/or transactions.</li>
 <li>Improved main library javadoc.</li>
 <li>Android library javadoc.</li>
