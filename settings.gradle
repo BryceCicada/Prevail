@@ -1,1 +1,4 @@
-include ':prevail'
+include 'Library'
+include ':AndroidLibrary'
+include 'example:ExampleAndroidApp'
+include 'example:ExampleJavaApp'
