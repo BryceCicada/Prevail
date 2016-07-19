@@ -81,17 +81,17 @@ public interface Chunk<K, V> extends Closeable {
   void addEventFactory(InsertEventFactory insertEventFactory);
 
   /**
-   * Add an QueryEventFactory to use when generating insert events.
+   * Add an QueryEventFactory to use when generating query events.
    */
   void addEventFactory(QueryEventFactory queryEventFactory);
 
   /**
-   * Add an UpdateEventFactory to use when generating insert events.
+   * Add an UpdateEventFactory to use when generating update events.
    */
   void addEventFactory(UpdateEventFactory updateEventFactory);
 
   /**
-   * Add an DeleteEventFactory to use when generating insert events.
+   * Add an DeleteEventFactory to use when generating delete events.
    */
   void addEventFactory(DeleteEventFactory deleteEventFactory);
 
